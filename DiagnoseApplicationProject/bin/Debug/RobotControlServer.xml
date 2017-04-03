@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RobotControlServer</name>
+    </assembly>
+    <members>
+        <member name="T:RobotControlServer.ActionSelector">
+            \brief Select an action in dependent of outer influences (intereference pulses).
+            This class handle the relation between outer influences such as balance problematic pulses, vision navigation, etc. and the control variable.
+            It has a autonomous functionality to control the robot in an environment.
+            At the beginning (after booting up) the control data were loaded from remote server (sql database) and were stored locally.
+        </member>
+        <member name="M:RobotControlServer.ActionSelector.updateLocalDatabase">
+            \brief Load control data from remote sql database.
+            Create connection to remote sql database.
+            Copy conten of database to local database.
+        </member>
+        <member name="T:Networking.NetworkConfig">
+            \brief Configuration ressources for Client / Server.
+        </member>
+        <member name="T:Networking.ServerUnit">
+            \brief Server implementation.
+        </member>
+        <member name="T:Networking.ClientUnit">
+            \brief Client implementation.   
+        </member>
+        <member name="T:Packager.DataPackager">
+            \brief Packaging new data from upper control algorithm.
+             This class handle the actions that were called from upper control algorithm and results (pendings, completings) that comes from the client.
+             It packs the selected action with specific parameters to byte array.
+             The byte array contains among others: Tasknumber, Velocity, Endposition
+             When data is packed an event is fired that the server can send the new packaged data to clients
+             
+             <B>EXAMPLE:</B>
+             
+             Upper control algorithm sends "New Position" like 10 deg with veloctity 10% and motor ID 1
+             DataPackager package this data to an byte array and fire event.
+             ServerUnit receive this new data and send it to client.
+             The client responds at first with the pending state and after completion with completion state.
+             The DataPackager reset its state after receiving the completion state
+             
+             <B>PACKAGE CONSTRUCT OUTGOING</B>
+             
+             Every cycle the algorithm send 8 byte via tcp/ip to the client
+             One data block per send cycle contains the data for one motor
+            
+             1. byte: action
+             2. byte: motor id
+             3. byte: velocity
+             4. byte: angle
+             5. byte: angle
+             6. byte: Direction of the motor 
+             7. byte: 
+             8. byte: 
+            
+             <B>PACKAGE CONSTRUCT INCOMING</B>
+             
+             1. byte: action
+             2. byte: motor id
+             3. byte: action state
+             4. byte: 
+             5. byte: 
+             6. byte: 
+             7. byte: 
+             8. byte:                                   
+        </member>
+        <member name="M:Packager.DataPackager.#ctor(Packager.GlobalDataSet)">
+            Constructor of the Packager class
+        </member>
+        <member name="M:Packager.DataPackager.startPackaging">
+            Start thread to handle the packaging of new data.
+        </member>
+        <member name="M:Packager.DataPackager.packagingLoop">
+            \brief Checks states / actions and pack data.
+            Check inside loop the current action that comes from upper control algorithm.
+            Check the states that comes from the client.
+            Pack all the control data to byte array package (global data) and fire event.
+        </member>
+        <member name="T:Packager.GlobalDataSet">
+            \brief Globally used program data.
+        </member>
+        <member name="T:Packager.HelperFunctions">
+            \brief A set of generally used functions.
+        </member>
+        <member name="T:Packager.Pulses">
+            \brief A collection of pulse data (sinus, sawtooth, etc.).
+        </member>
+        <member name="T:Packager.ReadWriteFile">
+            \brief File operations (read, write).
+        </member>
+        <member name="T:FormRobotControlServer.FormRobotControl">
+            \brief HMI to control and parametrize the robot.
+        </member>
+        <member name="F:FormRobotControlServer.FormRobotControl.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:FormRobotControlServer.FormRobotControl.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FormRobotControlServer.FormRobotControl.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:FormRobotControlServer.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:FormRobotControlServer.Properties.Settings">
+            \brief Application settings.
+        </member>
+        <member name="T:FormRobotControlServer.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:FormRobotControlServer.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:FormRobotControlServer.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:FormRobotControlServer.Properties.Resources.Database1">
+            <summary>
+              Looks up a localized resource of type System.Byte[].
+            </summary>
+        </member>
+    </members>
+</doc>
