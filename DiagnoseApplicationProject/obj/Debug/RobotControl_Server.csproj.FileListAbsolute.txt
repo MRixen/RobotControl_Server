@@ -27,8 +27,6 @@ C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationPr
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\obj\Debug\RobotControlServer.application
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\obj\Debug\RobotControlServer.exe
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\obj\Debug\RobotControlServer.pdb
-C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\bin\Debug\MySql.Data.dll
-C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\bin\Debug\MySql.Web.dll
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\bin\Debug\MySql.Data.xml
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\bin\Debug\MySql.Web.xml
 C:\Users\Manuel.Rixen\Documents\GitHub\RobotControl_Server\DiagnoseApplicationProject\bin\Debug\Resources\Database1_log.ldf

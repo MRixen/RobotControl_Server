@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Packager;
+using System.Windows.Forms;
 
 namespace Packager
 {
@@ -17,21 +18,28 @@ namespace Packager
         private Stopwatch timer_programExecution = new Stopwatch();
         private bool showProgramDuration;
         private bool abortServerOperation = false;
-        private int MAX_MOTORS = 4;
-        private int MAX_DATAPACKAGE_ELEMENT = 8;
+        private const int MAX_MOTORS = 4;
+        private const int MAX_DATAPACKAGE_ELEMENT = 8;
 
-        private byte[,] currentRecValues = new byte[4,8] { { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
+        private byte[][] currentRecValues = new byte[MAX_MOTORS][];
 
         private RobotActions[] robotAction = { RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing };
         private RobotOptions robotOption = RobotOptions.nothingSelected;
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
         private ActionStates robotPending = ActionStates.init;
-        private bool indicatorLed = false;
+        private bool[] indicatorLed = { false, false, false, false };
         private byte motorId = 0;
         private byte velocity = 0;
+        private byte motorSollAngle = 0;
 
         // TEST
         private int sollAngleTest = 0;
+
+        public GlobalDataSet()
+        {
+            // Init data array
+            for (int i = 0; i < MAX_MOTORS; i++) for (int j = 0; j < MAX_DATAPACKAGE_ELEMENT; j++) currentRecValues[i][j] = 0;
+        }
 
         public enum RobotActions
         {
@@ -84,11 +92,6 @@ namespace Packager
             get
             {
                 return MAX_DATAPACKAGE_ELEMENT;
-            }
-
-            set
-            {
-                MAX_DATAPACKAGE_ELEMENT = value;
             }
         }
 
@@ -183,7 +186,7 @@ namespace Packager
             }
         }
 
-        public byte[,] DataPackage_In
+        public byte[][] DataPackage_In
         {
             get
             {
@@ -235,7 +238,7 @@ namespace Packager
             }
         }
 
-        public bool IndicatorLed
+        public bool[] IndicatorLed
         {
             get
             {
@@ -255,10 +258,6 @@ namespace Packager
                 return MAX_MOTORS;
             }
 
-            set
-            {
-                MAX_MOTORS = value;
-            }
         }
 
         public byte MotorId
@@ -284,6 +283,19 @@ namespace Packager
             set
             {
                 velocity = value;
+            }
+        }
+
+        public byte MotorSollAngle
+        {
+            get
+            {
+                return motorSollAngle;
+            }
+
+            set
+            {
+                motorSollAngle = value;
             }
         }
     }

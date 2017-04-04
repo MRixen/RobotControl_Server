@@ -110,54 +110,67 @@ namespace FormRobotControlServer
         private void bWorker_IndicatorLed_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            bool iconLock_green = false;
-            bool iconLock_red = false;
+            bool[] iconLock_green = { false, false, false, false };
+            bool[] iconLock_red = { false, false, false, false };
+            Label[] label_aliveIcons = { label_aliveIcon_1, label_aliveIcon_2, label_aliveIcon_3, label_aliveIcon_4 };
+
 
             while (true)
             {
-                if (globalDataSet.IndicatorLed & !iconLock_green)
+                if (globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_green[globalDataSet.MotorId])
                 {
                     // Show green icon in gui
-                    iconLock_green = true;
-                    iconLock_red = false;
-                    label_aliveIcon.BeginInvoke((MethodInvoker)delegate () { label_aliveIcon.BackColor = Color.LightGreen; });
+                    iconLock_green[globalDataSet.MotorId] = true;
+                    iconLock_red[globalDataSet.MotorId] = false;
+                    label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.LightGreen; });
 
                 }
-                if (!globalDataSet.IndicatorLed & !iconLock_red)
+                if (!globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_red[globalDataSet.MotorId])
                 {
                     // Show red icon in gui
-                    iconLock_red = true;
-                    iconLock_green = false;
-                    label_aliveIcon.BeginInvoke((MethodInvoker)delegate () { label_aliveIcon.BackColor = Color.Red; });
+                    iconLock_red[globalDataSet.MotorId] = true;
+                    iconLock_green[globalDataSet.MotorId] = false;
+                    label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.Red; });
                 }
             }
         }
 
         private void buttonSaveRefPos_Click(object sender, EventArgs e)
         {
-            globalDataSet.Action = GlobalDataSet.RobotActions.saveToEeprom;
+            if (textBox_motorId.Text.Length != 0)
+            {
+                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveToEeprom;
+            }
         }
 
         private void button_MoveTo_Clicked(object sender, EventArgs e)
         {
-            globalDataSet.Action = GlobalDataSet.RobotActions.newPosition;
+            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0))
+            {
+                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
+                globalDataSet.SollAngleTest = Int32.Parse(textBox_soll_angle.Text);
+                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+            }
         }
 
-        // Disable the pid controller by set bit 7 to one
         private void checkChanged_disablePidController(object sender, EventArgs e)
         {
-            if (checkBox_disablePidController.Checked) globalDataSet.Action = GlobalDataSet.RobotActions.disablePidController;
-            else globalDataSet.Action = GlobalDataSet.RobotActions.enablePidController;
-        }
-
-        private void button_Ok_Click(object sender, EventArgs e)
-        {
-            if (textBox_soll_angle.Text.Length != 0) globalDataSet.SollAngleTest = Int32.Parse(textBox_soll_angle.Text);
+            if (textBox_motorId.Text.Length != 0)
+            {
+                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
+                if (checkBox_disablePidController.Checked) globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.disablePidController;
+                else globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.enablePidController;
+            }
         }
 
         private void button_Stopp_Click(object sender, EventArgs e)
         {
-            globalDataSet.Action = GlobalDataSet.RobotActions.doNothing;
+            if (textBox_motorId.Text.Length != 0)
+            {
+                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.doNothing;
+            }
         }
     }
 }

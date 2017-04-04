@@ -26,8 +26,6 @@ namespace RobotControlServer
         DataSet dataSetLocal = new DataSet();
         private DatabaseConnection databaseConnection;
 
-        //private string conString = "Server=192.168.0.22;Database=moveforward;Uid=root;Pwd=rbc;";
-
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
 
@@ -37,8 +35,65 @@ namespace RobotControlServer
 
             Task loadDatabaseTask = Task.Factory.StartNew(() => updateLocalDatabase());
             loadDatabaseTask.Wait();
+
+            loadDatabaseThread = new Thread(controlRobot);
+            loadDatabaseThread.Start();
         }
 
+
+        ///\brief Start controlling the robot.
+
+        /// In every cycle:
+        /// Check incoming dta (vision, stand up stability, etc.).
+        /// Set control data.
+        private void controlRobot()
+        {
+            // Data array for motor angle and motor velocity
+            // Byte 1: motor soll angle
+            // Byte 2: motor velocity
+            int[] controlData = new int[2];
+
+            while (!globalDataSet.AbortServerOperation)
+            {
+                // Single step forward
+                //if (globalDataSet.StartControlling)
+                if (true)
+                {
+                    // Set motor id
+                    globalDataSet.MotorId = 0;
+
+                    // Get control data for specific motor
+                    controlData = getControlData(globalDataSet.MotorId);
+
+                    // Get endposition from local db and set it to global data
+                    globalDataSet.MotorSollAngle = (byte)controlData[0];
+
+                    // Set velocity
+                    globalDataSet.Velocity = (byte)controlData[1];
+
+                    // Set task number for new position
+                    globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+                }
+            }
+
+        }
+
+        public int[] getControlData(int motorId)
+        {
+            DataRow dataRowTemp;
+            int[] retVal = new int[2];
+
+            // Create dataset fromlocal db
+            dataSetLocal = databaseConnection.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+
+            // Get row from local db
+            dataRowTemp = dataSetLocal.Tables[motorId].Rows[0];
+
+            // Get soll angle and velocity from row
+            for (int i = 1; i < 3; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i);
+
+            return retVal;
+        }
 
         ///\brief Load control data from remote sql database.
 
@@ -53,7 +108,7 @@ namespace RobotControlServer
             DataRow dataRowRemote, dataRowLocal;
 
             // Delete old db content
-            //databaseConnection.deleteDatabaseContent(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            databaseConnection.deleteDatabaseContent(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
 
             // Create datasets
             dataSetLocal = databaseConnection.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
@@ -80,10 +135,10 @@ namespace RobotControlServer
                         // Load dataset to local db
                         try
                         {
-                            // Get max rows from current table
+                            // Get max rows from current table in remote database
                             int maxTableRow = dataSetRemote.Tables[motorId].Rows.Count;
 
-                            // Copy row by row in specific table for local db
+                            // Copy row by row to specific table in local db
                             for (int rowCounter = 0; rowCounter < maxTableRow; rowCounter++)
                             {
                                 // Get a row from specific table of remote db
@@ -95,7 +150,7 @@ namespace RobotControlServer
                                 // Copy every item of the remote table row to local table row
                                 for (int itemCounter = 0; itemCounter < globalDataSet.MAX_MOTOR_AMOUNT; itemCounter++) dataRowLocal[itemCounter + 1] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
 
-                                // Set new row to tablem of local db
+                                // Set new row to table of local db
                                 dataSetLocal.Tables[motorId].Rows.Add(dataRowLocal);
                             }
 

@@ -10,6 +10,12 @@
             It has a autonomous functionality to control the robot in an environment.
             At the beginning (after booting up) the control data were loaded from remote server (sql database) and were stored locally.
         </member>
+        <member name="M:RobotControlServer.ActionSelector.controlRobot">
+            \brief Start controlling the robot.
+            In every cycle:
+            Check incoming dta (vision, stand up stability, etc.).
+            Set control data.
+        </member>
         <member name="M:RobotControlServer.ActionSelector.updateLocalDatabase">
             \brief Load control data from remote sql database.
             Create connection to remote sql database.

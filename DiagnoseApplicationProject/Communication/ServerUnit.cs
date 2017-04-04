@@ -40,7 +40,7 @@ namespace Networking
             //dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(dataPackageReceived);
 
             // Set localDataPackage to default value
-            localDataPackage = globalDataSet.DEFAULT_DATAPACKAGE;
+            for (int i = 0; i < localDataPackage.Length; i++) localDataPackage[i] = 0x00;
         }
 
         public void dataPackageReceived(byte[] dataPackage)
@@ -142,7 +142,7 @@ namespace Networking
                     }
            
                     // Set received data to global data array
-                    globalDataSet.DataPackage_In = receiver();
+                    globalDataSet.DataPackage_In[globalDataSet.MotorId] = receiver();
 
                     //for (int i = 0; i < globalDataSet.DataPackage_In.Length; i++) Debug.WriteLine("receive_bytes[" + i + "]: " + globalDataSet.DataPackage_In[i]);
 
