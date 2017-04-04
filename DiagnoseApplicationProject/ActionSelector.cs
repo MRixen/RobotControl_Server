@@ -93,7 +93,7 @@ namespace RobotControlServer
                                 dataRowLocal = dataSetLocal.Tables[motorId].NewRow();
 
                                 // Copy every item of the remote table row to local table row
-                                for (int itemCounter = 0; itemCounter < globalDataSet.MAX_TABLE_ELEMENTS; itemCounter++) dataRowLocal[itemCounter + 1] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
+                                for (int itemCounter = 0; itemCounter < globalDataSet.MAX_MOTOR_AMOUNT; itemCounter++) dataRowLocal[itemCounter + 1] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
 
                                 // Set new row to tablem of local db
                                 dataSetLocal.Tables[motorId].Rows.Add(dataRowLocal);

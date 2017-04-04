@@ -17,17 +17,18 @@ namespace Packager
         private Stopwatch timer_programExecution = new Stopwatch();
         private bool showProgramDuration;
         private bool abortServerOperation = false;
+        private int MAX_MOTORS = 4;
+        private int MAX_DATAPACKAGE_ELEMENT = 8;
 
-        private byte[] currentRecValues = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-        private byte[] DEFAULT_DATA_PACKAGE = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        private byte[,] currentRecValues = new byte[4,8] { { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
 
-        private RobotActions robotAction = RobotActions.doNothing;
+        private RobotActions[] robotAction = { RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing };
         private RobotOptions robotOption = RobotOptions.nothingSelected;
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
         private ActionStates robotPending = ActionStates.init;
         private bool indicatorLed = false;
-        private int MAX_MOTORS = 4;
-        private int MAX_TABLE_ELEMENT = 4;
+        private byte motorId = 0;
+        private byte velocity = 0;
 
         // TEST
         private int sollAngleTest = 0;
@@ -78,16 +79,16 @@ namespace Packager
             pending
         };
 
-        public byte[] DEFAULT_DATAPACKAGE
+        public int MAX_DATAPACKAGE_ELEMENTS
         {
             get
             {
-                return DEFAULT_DATA_PACKAGE;
+                return MAX_DATAPACKAGE_ELEMENT;
             }
 
             set
             {
-                DEFAULT_DATA_PACKAGE = value;
+                MAX_DATAPACKAGE_ELEMENT = value;
             }
         }
 
@@ -143,7 +144,7 @@ namespace Packager
             }
         }
 
-        public RobotActions Action
+        public RobotActions[] Action
         {
             get
             {
@@ -182,7 +183,7 @@ namespace Packager
             }
         }
 
-        public byte[] DataPackage_In
+        public byte[,] DataPackage_In
         {
             get
             {
@@ -260,16 +261,29 @@ namespace Packager
             }
         }
 
-        public int MAX_TABLE_ELEMENTS
+        public byte MotorId
         {
             get
             {
-                return MAX_TABLE_ELEMENT;
+                return motorId;
             }
 
             set
             {
-                MAX_TABLE_ELEMENT = value;
+                motorId = value;
+            }
+        }
+
+        public byte Velocity
+        {
+            get
+            {
+                return velocity;
+            }
+
+            set
+            {
+                velocity = value;
             }
         }
     }
