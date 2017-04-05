@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace Packager
 {
     ///\brief Globally used program data.
-    
+
     public class GlobalDataSet
     {
         private long timerValue;
@@ -31,14 +31,19 @@ namespace Packager
         private byte motorId = 0;
         private byte velocity = 0;
         private byte motorSollAngle = 0;
+        private bool autoModeIsActive = false;
 
         // TEST
         private int sollAngleTest = 0;
 
         public GlobalDataSet()
         {
-            // Init data array
-            for (int i = 0; i < MAX_MOTORS; i++) for (int j = 0; j < MAX_DATAPACKAGE_ELEMENT; j++) currentRecValues[i][j] = 0;
+            // Init data array            
+            for (int i = 0; i < MAX_MOTORS; i++)
+            {
+                currentRecValues[i] = new byte[8];
+                for (int j = 0; j < MAX_DATAPACKAGE_ELEMENT; j++) currentRecValues[i][j] = 0;
+            }
         }
 
         public enum RobotActions
@@ -296,6 +301,19 @@ namespace Packager
             set
             {
                 motorSollAngle = value;
+            }
+        }
+
+        public bool AutoModeIsActive
+        {
+            get
+            {
+                return autoModeIsActive;
+            }
+
+            set
+            {
+                autoModeIsActive = value;
             }
         }
     }

@@ -51,6 +51,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label_aliveIcon_4 = new System.Windows.Forms.Label();
             this.label_aliveIcon_3 = new System.Windows.Forms.Label();
+            this.checkBox_AutoMode = new System.Windows.Forms.CheckBox();
             this.groupBox_robotControl.SuspendLayout();
             this.groupBox_tasks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -65,6 +66,7 @@
             // groupBox_robotControl
             // 
             this.groupBox_robotControl.Controls.Add(this.label_motorId);
+            this.groupBox_robotControl.Controls.Add(this.checkBox_disablePidController);
             this.groupBox_robotControl.Controls.Add(this.textBox_motorId);
             this.groupBox_robotControl.Controls.Add(this.label_soll_angle);
             this.groupBox_robotControl.Controls.Add(this.button1);
@@ -78,7 +80,7 @@
             this.groupBox_robotControl.Size = new System.Drawing.Size(387, 429);
             this.groupBox_robotControl.TabIndex = 40;
             this.groupBox_robotControl.TabStop = false;
-            this.groupBox_robotControl.Text = "Actions";
+            this.groupBox_robotControl.Text = "Actions / Modes";
             // 
             // label_motorId
             // 
@@ -144,7 +146,7 @@
             // 
             // groupBox_tasks
             // 
-            this.groupBox_tasks.Controls.Add(this.checkBox_disablePidController);
+            this.groupBox_tasks.Controls.Add(this.checkBox_AutoMode);
             this.groupBox_tasks.Location = new System.Drawing.Point(408, 13);
             this.groupBox_tasks.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox_tasks.Name = "groupBox_tasks";
@@ -152,12 +154,12 @@
             this.groupBox_tasks.Size = new System.Drawing.Size(223, 429);
             this.groupBox_tasks.TabIndex = 41;
             this.groupBox_tasks.TabStop = false;
-            this.groupBox_tasks.Text = "Modes";
+            this.groupBox_tasks.Text = "Settings";
             // 
             // checkBox_disablePidController
             // 
             this.checkBox_disablePidController.AutoSize = true;
-            this.checkBox_disablePidController.Location = new System.Drawing.Point(7, 44);
+            this.checkBox_disablePidController.Location = new System.Drawing.Point(9, 282);
             this.checkBox_disablePidController.Name = "checkBox_disablePidController";
             this.checkBox_disablePidController.Size = new System.Drawing.Size(168, 21);
             this.checkBox_disablePidController.TabIndex = 3;
@@ -260,11 +262,22 @@
             this.label_aliveIcon_3.Size = new System.Drawing.Size(40, 17);
             this.label_aliveIcon_3.TabIndex = 8;
             // 
+            // checkBox_AutoMode
+            // 
+            this.checkBox_AutoMode.AutoSize = true;
+            this.checkBox_AutoMode.Location = new System.Drawing.Point(7, 24);
+            this.checkBox_AutoMode.Name = "checkBox_AutoMode";
+            this.checkBox_AutoMode.Size = new System.Drawing.Size(98, 21);
+            this.checkBox_AutoMode.TabIndex = 4;
+            this.checkBox_AutoMode.Text = "Auto mode";
+            this.checkBox_AutoMode.UseVisualStyleBackColor = true;
+            this.checkBox_AutoMode.CheckedChanged += new System.EventHandler(this.checkChanged_autoMode);
+            // 
             // FormRobotControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 455);
+            this.ClientSize = new System.Drawing.Size(782, 453);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox_tasks);
             this.Controls.Add(this.groupBox_robotControl);
@@ -310,5 +323,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label_motorId;
         private System.Windows.Forms.TextBox textBox_motorId;
+        private System.Windows.Forms.CheckBox checkBox_AutoMode;
     }
 }

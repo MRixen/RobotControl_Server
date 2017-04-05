@@ -52,7 +52,7 @@ namespace Packager
 
     class DataPackager
     {
-        public delegate void DataPackagedEventHandler(byte[][] dataPackage);
+        public delegate void DataPackagedEventHandler(byte[] dataPackage);
         public event DataPackagedEventHandler newPackageEvent; //!< This event is fired after new data is packaged
 
         private Thread serverThread_packaging; //!< This thread is necessary to run the packaging loop
@@ -65,10 +65,16 @@ namespace Packager
         {
             this.globalDataSet = globalDataSet;
             // Initialize the packaged data array with default values
-            for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++) for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++) dataPackage_out[i][j] = 0;
+            for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
+            {
+                dataPackage_out[i] = new byte[8];
+                for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++) dataPackage_out[i][j] = 0;
+            }
         }
 
-        /// Start thread to handle the packaging of new data.
+        ///\brief Start thread to handle the packaging of new data.
+        
+        /// Start a thread to package control data inside while loop.
         public void startPackaging()
         {
             this.serverThread_packaging = new Thread(new ThreadStart(packagingLoop));
@@ -98,8 +104,8 @@ namespace Packager
                 {
                     // Set indicator led to green
                     globalDataSet.IndicatorLed[globalDataSet.MotorId] = true;
-                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action);
-                    for (int i = 1; i < dataPackage_out.Length; i++) dataPackage_out[globalDataSet.MotorId][i] = 0;
+                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
+                    for (int i = 1; i < globalDataSet.MAX_DATAPACKAGE_ELEMENTS; i++) dataPackage_out[globalDataSet.MotorId][i] = 0;
                     newData = true;
                 }
 
@@ -113,7 +119,7 @@ namespace Packager
                 // - Incoming action for specific motor state is <init>
                 if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.saveToEeprom) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                 {
-                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action);
+                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     newData = true;
                 }
 
@@ -122,7 +128,7 @@ namespace Packager
                 // - Incoming action state is <init>
                 if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.disablePidController) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                 {
-                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action);
+                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     // Set motor id
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
                     newData = true;
@@ -133,7 +139,7 @@ namespace Packager
                 // - Incoming action state is <init>
                 if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.enablePidController) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                 {
-                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action);
+                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     // Set motor id
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
                     newData = true;
@@ -145,7 +151,7 @@ namespace Packager
                 if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.newPosition) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                 {
                     // Set action
-                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Action);
+                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
 
                     // Set motor id
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
@@ -177,7 +183,7 @@ namespace Packager
                 if (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.complete)
                 {
                     globalDataSet.Action[globalDataSet.MotorId] = (int)GlobalDataSet.RobotActions.doNothing;
-                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action);
+                    dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     newData = true;
                 }
 
@@ -185,7 +191,7 @@ namespace Packager
                 if (newData)
                 {
                     newData = false;
-                    this.newPackageEvent(dataPackage_out);
+                    this.newPackageEvent((byte[])dataPackage_out.GetValue(globalDataSet.MotorId));
                 }
 
                 //Debug.WriteLine("state " + globalDataSet.DataPackage_In[(int)GlobalDataSet.Incoming_Package_Content.actionState]);

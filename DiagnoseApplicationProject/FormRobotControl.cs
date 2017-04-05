@@ -62,16 +62,16 @@ namespace FormRobotControlServer
 
             // Set event that is fired by datapackager named newPackageEvent with method dataPackageReceived (listener: server)
             // Set event that is fired by server named newServerEvent with method dataPackageServerReceived (listener: dataPackager)
-            //dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(tcpServer.dataPackageReceived);
+            dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(tcpServer.dataPackageReceived);
 
             // Start server
-            //tcpServer.startServer();
+            tcpServer.startServer();
 
             // Start thread to package data (the data were packaged before the client is connected
-            //dataPackager.startPackaging();
+            dataPackager.startPackaging();
 
             // Check sensor alive in background
-            //bWorker_IndicatorLed.RunWorkerAsync();
+            bWorker_IndicatorLed.RunWorkerAsync();
 
             ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
@@ -119,25 +119,33 @@ namespace FormRobotControlServer
             {
                 if (globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_green[globalDataSet.MotorId])
                 {
-                    // Show green icon in gui
-                    iconLock_green[globalDataSet.MotorId] = true;
-                    iconLock_red[globalDataSet.MotorId] = false;
-                    label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.LightGreen; });
+                    if (IsHandleCreated)
+                    {
+                        // Show green icon in gui
+                        iconLock_green[globalDataSet.MotorId] = true;
+                        iconLock_red[globalDataSet.MotorId] = false;
+                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.LightGreen; });
+
+                    }
 
                 }
                 if (!globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_red[globalDataSet.MotorId])
                 {
-                    // Show red icon in gui
-                    iconLock_red[globalDataSet.MotorId] = true;
-                    iconLock_green[globalDataSet.MotorId] = false;
-                    label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.Red; });
+                    if (IsHandleCreated)
+                    {
+                        // Show red icon in gui
+                        iconLock_red[globalDataSet.MotorId] = true;
+                        iconLock_green[globalDataSet.MotorId] = false;
+                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.Red; });
+
+                    }
                 }
             }
         }
 
         private void buttonSaveRefPos_Click(object sender, EventArgs e)
         {
-            if (textBox_motorId.Text.Length != 0)
+            if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
                 globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveToEeprom;
@@ -146,7 +154,7 @@ namespace FormRobotControlServer
 
         private void button_MoveTo_Clicked(object sender, EventArgs e)
         {
-            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0))
+            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
                 globalDataSet.SollAngleTest = Int32.Parse(textBox_soll_angle.Text);
@@ -166,11 +174,17 @@ namespace FormRobotControlServer
 
         private void button_Stopp_Click(object sender, EventArgs e)
         {
-            if (textBox_motorId.Text.Length != 0)
+            if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
                 globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.doNothing;
             }
+        }
+
+        private void checkChanged_autoMode(object sender, EventArgs e)
+        {
+            if (checkBox_AutoMode.Checked) globalDataSet.AutoModeIsActive = true;
+            else globalDataSet.AutoModeIsActive = false;
         }
     }
 }

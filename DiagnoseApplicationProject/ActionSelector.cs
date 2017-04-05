@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace RobotControlServer
 {
-    ///\brief Select an action in dependent of outer influences (intereference pulses).
+    ///\brief Upper control algorithm. Select an action in dependent of outer influences.
 
     /// This class handle the relation between outer influences such as balance problematic pulses, vision navigation, etc. and the control variable.
     /// It has a autonomous functionality to control the robot in an environment.
@@ -29,6 +29,7 @@ namespace RobotControlServer
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
 
+        /// Constructor of the ActionSelector class
         public ActionSelector(GlobalDataSet globalDataSet)
         {
             this.globalDataSet = globalDataSet;
@@ -45,7 +46,7 @@ namespace RobotControlServer
 
         /// In every cycle:
         /// Check incoming dta (vision, stand up stability, etc.).
-        /// Set control data.
+        /// Set control data for one motor so that the packager can handle it.
         private void controlRobot()
         {
             // Data array for motor angle and motor velocity
@@ -57,7 +58,7 @@ namespace RobotControlServer
             {
                 // Single step forward
                 //if (globalDataSet.StartControlling)
-                if (true)
+                if (globalDataSet.AutoModeIsActive)
                 {
                     // Set motor id
                     globalDataSet.MotorId = 0;
@@ -78,6 +79,9 @@ namespace RobotControlServer
 
         }
 
+        ///\brief Getting control data from local database.
+
+        /// Gets an specific value (motor angle, velocity, etc.) from local database.
         public int[] getControlData(int motorId)
         {
             DataRow dataRowTemp;
@@ -98,7 +102,7 @@ namespace RobotControlServer
         ///\brief Load control data from remote sql database.
 
         /// Create connection to remote sql database.
-        /// Copy conten of database to local database.
+        /// Copy content of remote database to local database.
         private void updateLocalDatabase()
         {
             // Todo: Check against local db content if there are some changes

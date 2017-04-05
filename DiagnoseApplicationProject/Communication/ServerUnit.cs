@@ -39,8 +39,13 @@ namespace Networking
             //// Set event for new available packaged data
             //dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(dataPackageReceived);
 
-            // Set localDataPackage to default value
-            for (int i = 0; i < localDataPackage.Length; i++) localDataPackage[i] = 0x00;
+            // Initialize data array with default values
+                for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++)
+                {
+                    dataPackage[j] = 0;
+                    localDataPackage[j] = 0;
+                }
+            
         }
 
         public void dataPackageReceived(byte[] dataPackage)
