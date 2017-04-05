@@ -24,7 +24,7 @@ namespace RobotControlServer
         private string conString = String.Empty;
         private int MAX_MOTOR_ID = FormRobotControlServer.Properties.Settings.Default.MAX_TABLE_AMOUNT; // Amount of tables inside specific database (s0, s1, s2, etc.)
         DataSet dataSetLocal = new DataSet();
-        private DatabaseConnection databaseConnection;
+        private LocalDatabaseManager localDatabaseManager;
 
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
@@ -57,23 +57,29 @@ namespace RobotControlServer
             while (!globalDataSet.AbortServerOperation)
             {
                 // Single step forward
-                //if (globalDataSet.StartControlling)
                 if (globalDataSet.AutoModeIsActive)
                 {
-                    // Set motor id
-                    globalDataSet.MotorId = 0;
+                    // Set control data for specific motor when:
+                    //  - Current action is <doNothing>
+                    //  - Incoming action state for specific motor is <init>
+                    if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                    {
+                        // Set motor id
+                        globalDataSet.MotorId = 0;
 
-                    // Get control data for specific motor
-                    controlData = getControlData(globalDataSet.MotorId);
+                        // Get control data for specific motor
+                        controlData = getControlData(globalDataSet.MotorId);
 
-                    // Get endposition from local db and set it to global data
-                    globalDataSet.MotorSollAngle = (byte)controlData[0];
+                        // Get endposition from local db and set it to global data
+                        globalDataSet.MotorSollAngle = controlData[0];
 
-                    // Set velocity
-                    globalDataSet.Velocity = (byte)controlData[1];
+                        // Set velocity
+                        globalDataSet.MotorSollVelocity = controlData[1];
 
-                    // Set task number for new position
-                    globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+                        // Set task number for new position
+                        globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+
+                    }
                 }
             }
 
@@ -88,7 +94,7 @@ namespace RobotControlServer
             int[] retVal = new int[2];
 
             // Create dataset fromlocal db
-            dataSetLocal = databaseConnection.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            dataSetLocal = localDatabaseManager.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
 
             // Get row from local db
             dataRowTemp = dataSetLocal.Tables[motorId].Rows[0];
@@ -107,15 +113,18 @@ namespace RobotControlServer
         {
             // Todo: Check against local db content if there are some changes
 
-            databaseConnection = new DatabaseConnection();
+            localDatabaseManager = new LocalDatabaseManager();
             DataSet dataSetRemote = new DataSet();
             DataRow dataRowRemote, dataRowLocal;
 
-            // Delete old db content
-            databaseConnection.deleteDatabaseContent(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            // Delete old db content 
+            localDatabaseManager.deleteDatabaseContent(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+
+            // Reset identifier to start at 1
+            localDatabaseManager.resetId(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
 
             // Create datasets
-            dataSetLocal = databaseConnection.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            dataSetLocal = localDatabaseManager.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
 
             // Copy content of remote db to local db
             // Iterate through remote db for every control context, i.e. db name (moveforward, step forward, etc.)
@@ -139,6 +148,7 @@ namespace RobotControlServer
                         // Load dataset to local db
                         try
                         {
+
                             // Get max rows from current table in remote database
                             int maxTableRow = dataSetRemote.Tables[motorId].Rows.Count;
 
@@ -152,21 +162,20 @@ namespace RobotControlServer
                                 dataRowLocal = dataSetLocal.Tables[motorId].NewRow();
 
                                 // Copy every item of the remote table row to local table row
-                                for (int itemCounter = 0; itemCounter < globalDataSet.MAX_MOTOR_AMOUNT; itemCounter++) dataRowLocal[itemCounter + 1] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
+                                for (int itemCounter = 0; itemCounter < dataSetRemote.Tables[motorId].Columns.Count; itemCounter++) dataRowLocal[itemCounter] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
 
                                 // Set new row to table of local db
                                 dataSetLocal.Tables[motorId].Rows.Add(dataRowLocal);
                             }
 
                             // Upodate local db
-                            databaseConnection.UpdateDatabase(dataSetLocal, motorId);
+                            localDatabaseManager.UpdateDatabase(dataSetLocal);
                         }
                         catch (Exception err)
                         {
                             MessageBox.Show(err.Message);
                         }
                     }
-
                 }
                 catch (Exception)
                 {

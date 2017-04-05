@@ -73,17 +73,17 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>pLW4w39qZwu9XQKZfQTbmtpt8jA+FrgZY7PlHKGaIa8=</dsig:DigestValue>
+        <dsig:DigestValue>w0W+CcVTqspKt56AjHjaFs1XVt+phNnRjnDMSB6mhaU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Resources\Database1_log.ldf" size="3276800" writeableType="applicationData">
+  <file name="Resources\Database1_log.ldf" size="802816" writeableType="applicationData">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>JSHOuIkwAnl4fVNRIHUVf+aZIpoMs6C6adyGf7VTKoI=</dsig:DigestValue>
+      <dsig:DigestValue>iJF5lSvHuMn/qyMoUX/qveMRmyQUuHGw9AwXamwCjCs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="RobotControlServer.exe.config" size="4511">

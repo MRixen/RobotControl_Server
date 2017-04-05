@@ -5,21 +5,65 @@
     </assembly>
     <members>
         <member name="T:RobotControlServer.ActionSelector">
-            \brief Select an action in dependent of outer influences (intereference pulses).
+            \brief Upper control algorithm. Select an action in dependent of outer influences.
             This class handle the relation between outer influences such as balance problematic pulses, vision navigation, etc. and the control variable.
             It has a autonomous functionality to control the robot in an environment.
             At the beginning (after booting up) the control data were loaded from remote server (sql database) and were stored locally.
+        </member>
+        <member name="M:RobotControlServer.ActionSelector.#ctor(Packager.GlobalDataSet)">
+            Constructor of the ActionSelector class
         </member>
         <member name="M:RobotControlServer.ActionSelector.controlRobot">
             \brief Start controlling the robot.
             In every cycle:
             Check incoming dta (vision, stand up stability, etc.).
-            Set control data.
+            Set control data for one motor so that the packager can handle it.
+        </member>
+        <member name="M:RobotControlServer.ActionSelector.getControlData(System.Int32)">
+            \brief Getting control data from local database.
+            Gets an specific value (motor angle, velocity, etc.) from local database.
         </member>
         <member name="M:RobotControlServer.ActionSelector.updateLocalDatabase">
             \brief Load control data from remote sql database.
             Create connection to remote sql database.
-            Copy conten of database to local database.
+            Copy content of remote database to local database.
+        </member>
+        <member name="T:RobotControlServer.LocalDatabaseManager">
+            \brief Handle the connection to local database.
+            This class handle the connection to the local database.
+            It is possible to delete or create dataset with the structure of remote database.
+            Later it is possible to get content of the local copy.
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.#ctor">
+            Constructor of the DatabaseConnection class
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.UpdateDatabase(System.Data.DataSet)">
+            \brief Update local database with new content.
+            Update all tables inside the local database with a new dataset.
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.createDatasetsForDb(System.String)">
+            \brief Create a dataset for local database.
+            Create a dataset with structur of the remote database.
+            In this dataset we copy the content of the remote database and set it to the local database.
+            Later we can access some content of this local database.
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.deleteDatabaseContent(System.String)">
+            \brief Delete local database.
+            Connect to local database
+            Delete each row in dataset
+            Update database with empty dataset
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.getTableSizeForDb(System.Data.DataSet)">
+            \brief Gets the size of all tables in the local database.
+            Gets the maximum amount of available rows in all tables of the local database / dataset.
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.deleteDatabaseContentQuery(System.String)">
+            \brief Delete whole content of the local database.
+            Deletes all data that is stored in the local database.
+        </member>
+        <member name="M:RobotControlServer.LocalDatabaseManager.deleteDatabaseContentQuery(System.String,System.Int32)">
+            \brief Delete specific table of the local database.
+            Deletes a specific table that is stored in the local database.
         </member>
         <member name="T:Networking.NetworkConfig">
             \brief Configuration ressources for Client / Server.
@@ -74,7 +118,8 @@
             Constructor of the Packager class
         </member>
         <member name="M:Packager.DataPackager.startPackaging">
-            Start thread to handle the packaging of new data.
+            \brief Start thread to handle the packaging of new data.
+            Start a thread to package control data inside while loop.
         </member>
         <member name="M:Packager.DataPackager.packagingLoop">
             \brief Checks states / actions and pack data.

@@ -20,6 +20,7 @@ namespace Packager
         private bool abortServerOperation = false;
         private const int MAX_MOTORS = 4;
         private const int MAX_DATAPACKAGE_ELEMENT = 8;
+        private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
 
@@ -29,12 +30,9 @@ namespace Packager
         private ActionStates robotPending = ActionStates.init;
         private bool[] indicatorLed = { false, false, false, false };
         private byte motorId = 0;
-        private byte velocity = 0;
-        private byte motorSollAngle = 0;
+        private int motorSollVelocity = 0;
+        private int motorSollAngle = 0;
         private bool autoModeIsActive = false;
-
-        // TEST
-        private int sollAngleTest = 0;
 
         public GlobalDataSet()
         {
@@ -217,19 +215,6 @@ namespace Packager
             }
         }
 
-        public int SollAngleTest
-        {
-            get
-            {
-                return sollAngleTest;
-            }
-
-            set
-            {
-                sollAngleTest = value;
-            }
-        }
-
         public ActionStates PendingAction
         {
             get
@@ -278,20 +263,20 @@ namespace Packager
             }
         }
 
-        public byte Velocity
+        public int MotorSollVelocity
         {
             get
             {
-                return velocity;
+                return motorSollVelocity;
             }
 
             set
             {
-                velocity = value;
+                motorSollVelocity = value;
             }
         }
 
-        public byte MotorSollAngle
+        public int MotorSollAngle
         {
             get
             {
@@ -314,6 +299,14 @@ namespace Packager
             set
             {
                 autoModeIsActive = value;
+            }
+        }
+
+        public int MAX_TABLE_ENTRIES
+        {
+            get
+            {
+                return MAX_TABLE_ENTRY;
             }
         }
     }

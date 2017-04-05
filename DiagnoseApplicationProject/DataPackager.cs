@@ -147,7 +147,7 @@ namespace Packager
 
                 // Send control data when:
                 // - Actual action is <newPosition>
-                // - Incoming action state is <positionReached>
+                // - Incoming action state is <init>
                 if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.newPosition) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                 {
                     // Set action
@@ -157,14 +157,14 @@ namespace Packager
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
 
                     // Set direction and angle
-                    if (globalDataSet.SollAngleTest < 0)
+                    if (globalDataSet.MotorSollAngle < 0)
                     {
-                        angleValueTemp = (short)(globalDataSet.SollAngleTest * (-1));
+                        angleValueTemp = (short)(globalDataSet.MotorSollAngle * (-1));
                         dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorDir] = (byte)0;
                     }
                     else
                     {
-                        angleValueTemp = (short)(globalDataSet.SollAngleTest);
+                        angleValueTemp = (short)(globalDataSet.MotorSollAngle);
                         dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorDir] = (byte)1;
                     }
                     byte[] angleValue_converted = BitConverter.GetBytes(angleValueTemp);
@@ -173,7 +173,7 @@ namespace Packager
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.angle_2] = angleValue_converted[1];
 
                     // Set velocity
-                    velocityValueTemp = BitConverter.GetBytes(globalDataSet.Velocity);
+                    velocityValueTemp = BitConverter.GetBytes(globalDataSet.MotorSollVelocity);
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.velocity] = velocityValueTemp[0];
 
                     newData = true;

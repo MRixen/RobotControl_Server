@@ -65,13 +65,13 @@ namespace FormRobotControlServer
             dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(tcpServer.dataPackageReceived);
 
             // Start server
-            tcpServer.startServer();
+            //tcpServer.startServer();
 
             // Start thread to package data (the data were packaged before the client is connected
-            dataPackager.startPackaging();
+            //dataPackager.startPackaging();
 
             // Check sensor alive in background
-            bWorker_IndicatorLed.RunWorkerAsync();
+            //bWorker_IndicatorLed.RunWorkerAsync();
 
             ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
@@ -157,7 +157,7 @@ namespace FormRobotControlServer
             if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
-                globalDataSet.SollAngleTest = Int32.Parse(textBox_soll_angle.Text);
+                globalDataSet.MotorSollAngle = Int32.Parse(textBox_soll_angle.Text);
                 globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
             }
         }

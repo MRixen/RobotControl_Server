@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RobotControlServer
 {
@@ -13,17 +14,16 @@ namespace RobotControlServer
     /// This class handle the connection to the local database.
     /// It is possible to delete or create dataset with the structure of remote database.
     /// Later it is possible to get content of the local copy.
-    public class DatabaseConnection
+    public class LocalDatabaseManager
     {
         private int DATABASE_SIZE = 4;
         private string strCon;
         SqlDataAdapter dataAdapter, dataAdapter1, dataAdapter2, dataAdapter3, dataAdapterX;
         private DataSet dataSet, dataSetX;
         private int[] maxTableRows;
-        private SqlConnection dataBase_connection;
 
         /// Constructor of the DatabaseConnection class
-        public DatabaseConnection()
+        public LocalDatabaseManager()
         {
 
         }
@@ -31,7 +31,7 @@ namespace RobotControlServer
         ///\brief Update local database with new content.
 
         /// Update all tables inside the local database with a new dataset.
-        public void UpdateDatabase(System.Data.DataSet dataSet, int tableId)
+        public void UpdateDatabase(System.Data.DataSet dataSet)
         {
             try
             {
@@ -47,9 +47,9 @@ namespace RobotControlServer
                 System.Data.SqlClient.SqlCommandBuilder commandBuilder3 = new System.Data.SqlClient.SqlCommandBuilder(dataAdapter3);
                 commandBuilder3.DataAdapter.Update(dataSet.Tables[3]);
             }
-            catch (DBConcurrencyException e)
+            catch (Exception e)
             {
-
+                MessageBox.Show(e.Message);
             }
         }
 
@@ -61,11 +61,11 @@ namespace RobotControlServer
         public DataSet createDatasetsForDb(string dBdescription)
         {
             // Create and open connection to specific database
-            dataBase_connection = new System.Data.SqlClient.SqlConnection(dBdescription);
+            SqlConnection dataBase_connection = new SqlConnection(dBdescription);
             dataBase_connection.Open();
 
             // Copy content of database to dataset and close connection
-            dataSet = new System.Data.DataSet();
+            dataSet = new DataSet();
             dataAdapter = new SqlDataAdapter("SELECT * FROM tbl_rl_j0", dataBase_connection);
             dataAdapter.Fill(dataSet, "tbl_rl_j0");
 
@@ -81,6 +81,35 @@ namespace RobotControlServer
             dataBase_connection.Close();
 
             return dataSet;
+        }
+
+        ///\brief Delete local database.
+
+        /// Connect to local database
+        /// Delete each row in dataset
+        /// Update database with empty dataset
+        public void deleteDatabaseContent(string dBdescription)
+        {
+            DataRow dataRowTemp;
+            int maxTableRow;
+
+            // Create dataset from local db
+            DataSet dataSet = createDatasetsForDb(dBdescription);
+
+            int maxTables = dataSet.Tables.Count;
+
+            // Get row from local db
+            for (int tableCounter = 0; tableCounter < maxTables; tableCounter++)
+            {
+                maxTableRow = dataSet.Tables[tableCounter].Rows.Count;
+
+                for (int rowCounter = 0; rowCounter < maxTableRow; rowCounter++)
+                {
+                    dataSet.Tables[tableCounter].Rows[rowCounter].Delete();
+                }
+            }
+
+            UpdateDatabase(dataSet);
         }
 
         ///\brief Gets the size of all tables in the local database.
@@ -99,9 +128,9 @@ namespace RobotControlServer
         ///\brief Delete whole content of the local database.
 
         /// Deletes all data that is stored in the local database.
-        public void deleteDatabaseContent(string dBdescription)
+        public void deleteDatabaseContentQuery(string dBdescription)
         {
-            dataBase_connection = new System.Data.SqlClient.SqlConnection(dBdescription);
+            SqlConnection dataBase_connection = new SqlConnection(dBdescription);
             int MAX_TABLE_AMOUNT = FormRobotControlServer.Properties.Settings.Default.MAX_TABLE_AMOUNT;
             if (dataBase_connection != null)
             {
@@ -116,15 +145,34 @@ namespace RobotControlServer
                     cmd.ExecuteNonQuery();
                     dataBase_connection.Close();
                 }
+
             }
         }
+
+
+        public void resetId(string dBdescription)
+        {
+            SqlConnection dataBase_connection = new SqlConnection(dBdescription);
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.Connection = dataBase_connection;
+
+            dataBase_connection.Open();
+            for (int i = 0; i < 4; i++)
+            {
+                cmd.CommandText = "DBCC CHECKIDENT ('tbl_rl_j" + i + "', RESEED, 0) ";
+                cmd.ExecuteNonQuery();
+            }
+            dataBase_connection.Close();
+        }
+
 
         ///\brief Delete specific table of the local database.
 
         /// Deletes a specific table that is stored in the local database.
-        public void deleteDatabaseContent(string dBdescription, int tableId)
+        public void deleteDatabaseContentQuery(string dBdescription, int tableId)
         {
-            dataBase_connection = new System.Data.SqlClient.SqlConnection(dBdescription);
+            SqlConnection dataBase_connection = new System.Data.SqlClient.SqlConnection(dBdescription);
             int MAX_TABLE_AMOUNT = FormRobotControlServer.Properties.Settings.Default.MAX_TABLE_AMOUNT;
             if (dataBase_connection != null)
             {
