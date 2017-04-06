@@ -23,7 +23,7 @@ namespace Packager
         private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
-
+        private int[] controlDataIncrement = new int[10];
         private RobotActions[] robotAction = { RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing };
         private RobotOptions robotOption = RobotOptions.nothingSelected;
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
@@ -307,6 +307,19 @@ namespace Packager
             get
             {
                 return MAX_TABLE_ENTRY;
+            }
+        }
+
+        public int[] ControlDataIncrement
+        {
+            get
+            {
+                return controlDataIncrement;
+            }
+
+            set
+            {
+                controlDataIncrement = value;
             }
         }
     }

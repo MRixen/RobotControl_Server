@@ -81,20 +81,8 @@ namespace FormRobotControlServer.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Manuel.Rixen\\Documen" +
-            "ts\\GitHub\\DataBase\\DataBase\\Database2.mdf;Initial Catalog=Database2;Integrated S" +
-            "ecurity=True")]
-        public string ConnectionString_DataBase_RightLeg_extracted {
-            get {
-                return ((string)(this["ConnectionString_DataBase_RightLeg_extracted"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Manuel.Rixen\\Documen" +
-            "ts\\GitHub\\DataBase\\DataBase\\Database1.mdf;Initial Catalog=Database1;Integrated S" +
-            "ecurity=True")]
+            "ts\\GitHub\\DataBase_RobotControl\\DataBase\\DB_RobotControl.mdf;Initial Catalog=Dat" +
+            "abase1;Integrated Security=True")]
         public string ConnectionString_DataBase {
             get {
                 return ((string)(this["ConnectionString_DataBase"]));

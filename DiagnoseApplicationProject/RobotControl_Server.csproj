@@ -91,7 +91,7 @@
     <Compile Include="Communication\NetworkConfig.cs" />
     <Compile Include="Communication\ServerUnit.cs" />
     <Compile Include="Communication\ClientUnit.cs" />
-    <Compile Include="DatabaseConnection.cs" />
+    <Compile Include="LocalDatabaseManager.cs" />
     <Compile Include="DataPackager.cs" />
     <Compile Include="FormRobotControl.cs">
       <SubType>Form</SubType>
@@ -151,12 +151,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Database1.mdf">
+    <None Include="Resources\DB_RobotControl.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Resources\Database1_log.ldf">
+    <Content Include="Resources\DB_RobotControl_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>Database1.mdf</DependentUpon>
+      <DependentUpon>DB_RobotControl.mdf</DependentUpon>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

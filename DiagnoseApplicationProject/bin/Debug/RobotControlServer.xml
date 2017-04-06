@@ -19,7 +19,7 @@
             Check incoming dta (vision, stand up stability, etc.).
             Set control data for one motor so that the packager can handle it.
         </member>
-        <member name="M:RobotControlServer.ActionSelector.getControlData(System.Int32)">
+        <member name="M:RobotControlServer.ActionSelector.getControlData(System.Int32,System.Int32)">
             \brief Getting control data from local database.
             Gets an specific value (motor angle, velocity, etc.) from local database.
         </member>
@@ -37,7 +37,7 @@
         <member name="M:RobotControlServer.LocalDatabaseManager.#ctor">
             Constructor of the DatabaseConnection class
         </member>
-        <member name="M:RobotControlServer.LocalDatabaseManager.UpdateDatabase(System.Data.DataSet)">
+        <member name="M:RobotControlServer.LocalDatabaseManager.UpdateDatabase(System.Data.DataSet,System.String)">
             \brief Update local database with new content.
             Update all tables inside the local database with a new dataset.
         </member>
@@ -183,7 +183,7 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="P:FormRobotControlServer.Properties.Resources.Database1">
+        <member name="P:FormRobotControlServer.Properties.Resources.DB_RobotControl">
             <summary>
               Looks up a localized resource of type System.Byte[].
             </summary>

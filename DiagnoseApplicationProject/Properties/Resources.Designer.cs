@@ -63,9 +63,9 @@ namespace FormRobotControlServer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Database1 {
+        internal static byte[] DB_RobotControl {
             get {
-                object obj = ResourceManager.GetObject("Database1", resourceCulture);
+                object obj = ResourceManager.GetObject("DB_RobotControl", resourceCulture);
                 return ((byte[])(obj));
             }
         }

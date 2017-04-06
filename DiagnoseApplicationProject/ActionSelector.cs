@@ -20,7 +20,8 @@ namespace RobotControlServer
 
     class ActionSelector
     {
-        private string[] dbName = { "moveforward" };
+        private string[] dbName = { "stepforward" };
+        private string localDbDescription = FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase;
         private string conString = String.Empty;
         private int MAX_MOTOR_ID = FormRobotControlServer.Properties.Settings.Default.MAX_TABLE_AMOUNT; // Amount of tables inside specific database (s0, s1, s2, etc.)
         DataSet dataSetLocal = new DataSet();
@@ -68,7 +69,7 @@ namespace RobotControlServer
                         globalDataSet.MotorId = 0;
 
                         // Get control data for specific motor
-                        controlData = getControlData(globalDataSet.MotorId);
+                        controlData = getControlData(globalDataSet.MotorId, globalDataSet.ControlDataIncrement[globalDataSet.MotorId]);
 
                         // Get endposition from local db and set it to global data
                         globalDataSet.MotorSollAngle = controlData[0];
@@ -82,25 +83,24 @@ namespace RobotControlServer
                     }
                 }
             }
-
         }
 
         ///\brief Getting control data from local database.
 
         /// Gets an specific value (motor angle, velocity, etc.) from local database.
-        public int[] getControlData(int motorId)
+        public int[] getControlData(int motorId, int increment)
         {
             DataRow dataRowTemp;
             int[] retVal = new int[2];
 
             // Create dataset fromlocal db
-            dataSetLocal = localDatabaseManager.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
 
             // Get row from local db
-            dataRowTemp = dataSetLocal.Tables[motorId].Rows[0];
+            dataRowTemp = dataSetLocal.Tables[motorId].Rows[increment-1];
 
             // Get soll angle and velocity from row
-            for (int i = 1; i < 3; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i);
+            for (int i = 0; i < 2; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i+1);
 
             return retVal;
         }
@@ -118,13 +118,13 @@ namespace RobotControlServer
             DataRow dataRowRemote, dataRowLocal;
 
             // Delete old db content 
-            localDatabaseManager.deleteDatabaseContent(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            localDatabaseManager.deleteDatabaseContent(localDbDescription);
 
             // Reset identifier to start at 1
-            localDatabaseManager.resetId(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            localDatabaseManager.resetId(localDbDescription);
 
             // Create datasets
-            dataSetLocal = localDatabaseManager.createDatasetsForDb(FormRobotControlServer.Properties.Settings.Default.ConnectionString_DataBase);
+            dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
 
             // Copy content of remote db to local db
             // Iterate through remote db for every control context, i.e. db name (moveforward, step forward, etc.)
@@ -141,14 +141,13 @@ namespace RobotControlServer
                     for (int motorId = 0; motorId < globalDataSet.MAX_MOTOR_AMOUNT; motorId++)
                     {
                         // Get content of specific table in remote db
-                        cmd.CommandText = "SELECT * FROM s" + motorId;
+                        cmd.CommandText = "SELECT * FROM m" + motorId;
                         MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                        adapter.Fill(dataSetRemote, "tbl_rl_j" + motorId);
+                        adapter.Fill(dataSetRemote, "m" + motorId);
 
                         // Load dataset to local db
                         try
                         {
-
                             // Get max rows from current table in remote database
                             int maxTableRow = dataSetRemote.Tables[motorId].Rows.Count;
 
@@ -169,7 +168,10 @@ namespace RobotControlServer
                             }
 
                             // Upodate local db
-                            localDatabaseManager.UpdateDatabase(dataSetLocal);
+                            localDatabaseManager.UpdateDatabase(dataSetLocal, localDbDescription);
+
+                            // Save amount of rows for each table
+                            globalDataSet.ControlDataIncrement[motorId] = maxTableRow;
                         }
                         catch (Exception err)
                         {
