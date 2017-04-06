@@ -18,18 +18,23 @@ namespace Packager
         private Stopwatch timer_programExecution = new Stopwatch();
         private bool showProgramDuration;
         private bool abortServerOperation = false;
+        private bool abortActionSelector = false;
         private const int MAX_MOTORS = 4;
         private const int MAX_DATAPACKAGE_ELEMENT = 8;
         private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
-        private int[] controlDataIncrement = new int[10];
+        /// controlDataMaxRow includes the maximum number of rows of motor table (for all motors)
+        private int[] controlDataMaxRow = new int[MAX_MOTORS];
+
+        /// controlDataRowCounter includes the current counter for a row of motor table (for all motors)
+        private int[] controlDataRowCounter = new int[MAX_MOTORS]; 
         private RobotActions[] robotAction = { RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing, RobotActions.doNothing };
         private RobotOptions robotOption = RobotOptions.nothingSelected;
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
         private ActionStates robotPending = ActionStates.init;
         private bool[] indicatorLed = { false, false, false, false };
-        private byte motorId = 0;
+        private int motorId = 0;
         private int motorSollVelocity = 0;
         private int motorSollAngle = 0;
         private bool autoModeIsActive = false;
@@ -42,6 +47,9 @@ namespace Packager
                 currentRecValues[i] = new byte[8];
                 for (int j = 0; j < MAX_DATAPACKAGE_ELEMENT; j++) currentRecValues[i][j] = 0;
             }
+
+            // Init control data counter array 
+            for (int i = 0; i < MAX_MOTORS; i++) controlDataRowCounter[i] = 0;
         }
 
         public enum RobotActions
@@ -250,7 +258,7 @@ namespace Packager
 
         }
 
-        public byte MotorId
+        public int MotorId
         {
             get
             {
@@ -310,16 +318,42 @@ namespace Packager
             }
         }
 
-        public int[] ControlDataIncrement
+        public int[] ControlDataMaxRows
         {
             get
             {
-                return controlDataIncrement;
+                return controlDataMaxRow;
             }
 
             set
             {
-                controlDataIncrement = value;
+                controlDataMaxRow = value;
+            }
+        }
+
+        public bool AbortActionSelector
+        {
+            get
+            {
+                return abortActionSelector;
+            }
+
+            set
+            {
+                abortActionSelector = value;
+            }
+        }
+
+        public int[] ControlDataRowCounter
+        {
+            get
+            {
+                return controlDataRowCounter;
+            }
+
+            set
+            {
+                controlDataRowCounter = value;
             }
         }
     }

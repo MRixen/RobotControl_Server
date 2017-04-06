@@ -130,7 +130,7 @@ namespace Packager
                 {
                     dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     // Set motor id
-                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
+                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.MotorId;
                     newData = true;
                 }
 
@@ -141,7 +141,7 @@ namespace Packager
                 {
                     dataPackage_out[globalDataSet.MotorId][0] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
                     // Set motor id
-                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
+                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.MotorId;
                     newData = true;
                 }
 
@@ -154,7 +154,7 @@ namespace Packager
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
 
                     // Set motor id
-                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = globalDataSet.MotorId;
+                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.MotorId;
 
                     // Set direction and angle
                     if (globalDataSet.MotorSollAngle < 0)

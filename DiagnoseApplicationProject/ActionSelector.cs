@@ -55,32 +55,40 @@ namespace RobotControlServer
             // Byte 2: motor velocity
             int[] controlData = new int[2];
 
-            while (!globalDataSet.AbortServerOperation)
+            while (!globalDataSet.AbortActionSelector)
             {
                 // Single step forward
                 if (globalDataSet.AutoModeIsActive)
                 {
-                    // Set control data for specific motor when:
-                    //  - Current action is <doNothing>
-                    //  - Incoming action state for specific motor is <init>
-                    if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                    for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                     {
-                        // Set motor id
-                        globalDataSet.MotorId = 0;
+                        // Set control data for specific motor when:
+                        //  - Current action for specific motor is <doNothing>
+                        //  - Incoming action state for specific motor is <init>
+                        if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                        {
+                            // Set motor id
+                            globalDataSet.MotorId = motorCounter;
 
-                        // Get control data for specific motor
-                        controlData = getControlData(globalDataSet.MotorId, globalDataSet.ControlDataIncrement[globalDataSet.MotorId]);
+                            // Get control data for specific motor
+                            controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
 
-                        // Get endposition from local db and set it to global data
-                        globalDataSet.MotorSollAngle = controlData[0];
+                            // Get endposition from local db and set it to global data
+                            globalDataSet.MotorSollAngle = controlData[0];
 
-                        // Set velocity
-                        globalDataSet.MotorSollVelocity = controlData[1];
+                            // Set velocity
+                            globalDataSet.MotorSollVelocity = controlData[1];
 
-                        // Set task number for new position
-                        globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+                            // Set task number for new position
+                            globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
 
+                            // Increment the counter for row in a motor table to get the next control value (angle, velocity)
+                            // If last row is reached reset the counter to zero
+                            if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
+                            else globalDataSet.ControlDataRowCounter[motorCounter] = 0;
+                        }
                     }
+
                 }
             }
         }
@@ -97,10 +105,10 @@ namespace RobotControlServer
             dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
 
             // Get row from local db
-            dataRowTemp = dataSetLocal.Tables[motorId].Rows[increment-1];
+            dataRowTemp = dataSetLocal.Tables[motorId].Rows[increment];
 
             // Get soll angle and velocity from row
-            for (int i = 0; i < 2; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i+1);
+            for (int i = 0; i < 2; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i + 1);
 
             return retVal;
         }
@@ -171,7 +179,7 @@ namespace RobotControlServer
                             localDatabaseManager.UpdateDatabase(dataSetLocal, localDbDescription);
 
                             // Save amount of rows for each table
-                            globalDataSet.ControlDataIncrement[motorId] = maxTableRow;
+                            globalDataSet.ControlDataMaxRows[motorId] = maxTableRow;
                         }
                         catch (Exception err)
                         {
