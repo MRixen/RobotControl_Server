@@ -29,6 +29,8 @@ namespace RobotControlServer
 
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
+        private float duration = 0.0f;
+        private const float SAMPLE_TIME = 0.1f;
 
         /// Constructor of the ActionSelector class
         public ActionSelector(GlobalDataSet globalDataSet)
@@ -53,42 +55,56 @@ namespace RobotControlServer
             // Data array for motor angle and motor velocity
             // Byte 1: motor soll angle
             // Byte 2: motor velocity
-            int[] controlData = new int[2];
+            int[] controlData = new int[3];
 
             while (!globalDataSet.AbortActionSelector)
             {
                 // Single step forward
                 if (globalDataSet.AutoModeIsActive)
                 {
+                    // Here we do the following:
+                    // 1. Set motor id
+                    // 2. Get a row from motor table (for specific movement context, i.e. step forward, step backward, etc.)
+                    // 3. Check if current duration is equal to time value in the row of the motor table
+                    //   3.1 This time value specifies the moment of a turning point
+                    // 4. Check if current motor is in state <init>
+                    //   4.1 If motor is in state <init> set the control data and increment the row counter        
+                    //   4.2 If motor is not in state <init> set no control data --> TODO: Maybe we need to change this behaviour
+                    // 5. Increment the duration value 
                     for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                     {
-                        // Set control data for specific motor when:
-                        //  - Current action for specific motor is <doNothing>
-                        //  - Incoming action state for specific motor is <init>
-                        if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                        // Get control data for specific motor (angle, velocity, time)
+                        controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
+
+                        // Check if actual sampletime equal to time value in actual row of specific motor table
+                        // We need to divide the time value (controlData[2]) because we want to get a return value as int array
+                        if (duration == (controlData[2] / 10))
                         {
-                            // Set motor id
-                            globalDataSet.MotorId = motorCounter;
+                            // Set control data for specific motor when:
+                            //  - Current action for specific motor is <doNothing>
+                            //  - Incoming action state for specific motor is <init>
+                            if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                            {
+                                // Set motor id
+                                globalDataSet.MotorId = motorCounter;
 
-                            // Get control data for specific motor
-                            controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
+                                // Get endposition from local db and set it to global data
+                                globalDataSet.MotorSollAngle = controlData[0];
 
-                            // Get endposition from local db and set it to global data
-                            globalDataSet.MotorSollAngle = controlData[0];
+                                // Set velocity
+                                globalDataSet.MotorSollVelocity = controlData[1];
 
-                            // Set velocity
-                            globalDataSet.MotorSollVelocity = controlData[1];
+                                // Set task number for new position
+                                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
 
-                            // Set task number for new position
-                            globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
-
-                            // Increment the counter for row in a motor table to get the next control value (angle, velocity)
-                            // If last row is reached reset the counter to zero
-                            if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
-                            else globalDataSet.ControlDataRowCounter[motorCounter] = 0;
+                                // Increment the counter for row in a motor table to get the next control value (angle, velocity)
+                                // If last row is reached reset the counter to zero
+                                if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
+                                else globalDataSet.ControlDataRowCounter[motorCounter] = 0;
+                            }
                         }
                     }
-
+                    duration = duration + SAMPLE_TIME;
                 }
             }
         }
@@ -99,7 +115,7 @@ namespace RobotControlServer
         public int[] getControlData(int motorId, int increment)
         {
             DataRow dataRowTemp;
-            int[] retVal = new int[2];
+            int[] retVal = new int[3];
 
             // Create dataset fromlocal db
             dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
@@ -108,7 +124,7 @@ namespace RobotControlServer
             dataRowTemp = dataSetLocal.Tables[motorId].Rows[increment];
 
             // Get soll angle and velocity from row
-            for (int i = 0; i < 2; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i + 1);
+            for (int i = 0; i < retVal.Length; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i + 1);
 
             return retVal;
         }

@@ -130,6 +130,12 @@
         <member name="T:Packager.GlobalDataSet">
             \brief Globally used program data.
         </member>
+        <member name="F:Packager.GlobalDataSet.controlDataMaxRow">
+            controlDataMaxRow includes the maximum number of rows of motor table (for all motors)
+        </member>
+        <member name="F:Packager.GlobalDataSet.controlDataRowCounter">
+            controlDataRowCounter includes the current counter for a row of motor table (for all motors)
+        </member>
         <member name="T:Packager.HelperFunctions">
             \brief A set of generally used functions.
         </member>

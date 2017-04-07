@@ -65,15 +65,15 @@ namespace FormRobotControlServer
             dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(tcpServer.dataPackageReceived);
 
             // Start server
-            //tcpServer.startServer();
+            tcpServer.startServer();
 
             // Start thread to package data (the data were packaged before the client is connected
-            //dataPackager.startPackaging();
+            dataPackager.startPackaging();
 
             // Check sensor alive in background
-            //bWorker_IndicatorLed.RunWorkerAsync();
+            bWorker_IndicatorLed.RunWorkerAsync();
 
-            ActionSelector actionSelector = new ActionSelector(globalDataSet);
+            //ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
 
         private void FormDatabase_Load(object sender, EventArgs e)
@@ -117,26 +117,26 @@ namespace FormRobotControlServer
 
             while (true)
             {
-                if (globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_green[globalDataSet.MotorId])
+                if (globalDataSet.IndicatorLed[globalDataSet.MotorId - 1] & !iconLock_green[globalDataSet.MotorId - 1])
                 {
                     if (IsHandleCreated)
                     {
                         // Show green icon in gui
-                        iconLock_green[globalDataSet.MotorId] = true;
-                        iconLock_red[globalDataSet.MotorId] = false;
-                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.LightGreen; });
+                        iconLock_green[globalDataSet.MotorId-1] = true;
+                        iconLock_red[globalDataSet.MotorId - 1] = false;
+                        label_aliveIcons[globalDataSet.MotorId - 1].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId - 1].BackColor = Color.LightGreen; });
 
                     }
 
                 }
-                if (!globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_red[globalDataSet.MotorId])
+                if (!globalDataSet.IndicatorLed[globalDataSet.MotorId - 1] & !iconLock_red[globalDataSet.MotorId - 1])
                 {
                     if (IsHandleCreated)
                     {
                         // Show red icon in gui
-                        iconLock_red[globalDataSet.MotorId] = true;
-                        iconLock_green[globalDataSet.MotorId] = false;
-                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.Red; });
+                        iconLock_red[globalDataSet.MotorId - 1] = true;
+                        iconLock_green[globalDataSet.MotorId - 1] = false;
+                        label_aliveIcons[globalDataSet.MotorId - 1].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId - 1].BackColor = Color.Red; });
 
                     }
                 }

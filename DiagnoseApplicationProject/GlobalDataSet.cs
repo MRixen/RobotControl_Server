@@ -34,7 +34,7 @@ namespace Packager
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
         private ActionStates robotPending = ActionStates.init;
         private bool[] indicatorLed = { false, false, false, false };
-        private int motorId = 0;
+        private int motorId = 1;
         private int motorSollVelocity = 0;
         private int motorSollAngle = 0;
         private bool autoModeIsActive = false;
