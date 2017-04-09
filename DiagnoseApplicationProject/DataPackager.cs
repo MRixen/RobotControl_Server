@@ -56,7 +56,7 @@ namespace Packager
         public event DataPackagedEventHandler newPackageEvent; //!< This event is fired after new data is packaged
 
         private Thread serverThread_packaging; //!< This thread is necessary to run the packaging loop
-        private byte[][] dataPackage_out = new byte[4][]; //!< Package that contains the packaged control data
+        private byte[][] dataPackage_out; //!< Package that contains the packaged control data
         private GlobalDataSet globalDataSet; //!< Contains global data (different classes use the same object to share data)
         private short angleValueTemp = 0; //!< Temporary angle that is set to the package
 
@@ -64,6 +64,8 @@ namespace Packager
         public DataPackager(GlobalDataSet globalDataSet)
         {
             this.globalDataSet = globalDataSet;
+            dataPackage_out = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT][];
+
             // Initialize the packaged data array with default values
             for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
             {
@@ -154,7 +156,7 @@ namespace Packager
                     dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Action[globalDataSet.MotorId]);
 
                     // Set motor id
-                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.MotorId;
+                    dataPackage_out[globalDataSet.MotorId][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)(globalDataSet.MotorId+1);
 
                     // Set direction and angle
                     if (globalDataSet.MotorSollAngle < 0)

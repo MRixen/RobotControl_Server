@@ -29,8 +29,11 @@ namespace RobotControlServer
 
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
-        private float duration = 0.0f;
-        private const float SAMPLE_TIME = 0.1f;
+        private long duration = 0;
+        private const int SAMPLE_TIME = 10; // In milliseconds
+        private Timer controlTimer;
+        private bool resetDurationCounter = true;
+        private int resetValue = 0;
 
         /// Constructor of the ActionSelector class
         public ActionSelector(GlobalDataSet globalDataSet)
@@ -40,8 +43,11 @@ namespace RobotControlServer
             Task loadDatabaseTask = Task.Factory.StartNew(() => updateLocalDatabase());
             loadDatabaseTask.Wait();
 
-            loadDatabaseThread = new Thread(controlRobot);
-            loadDatabaseThread.Start();
+            // Start robot control as a timer
+            controlTimer = new Timer(this.controlRobot, null, 0, SAMPLE_TIME);
+
+            //loadDatabaseThread = new Thread(controlRobot);
+            //loadDatabaseThread.Start();
         }
 
 
@@ -50,63 +56,85 @@ namespace RobotControlServer
         /// In every cycle:
         /// Check incoming dta (vision, stand up stability, etc.).
         /// Set control data for one motor so that the packager can handle it.
-        private void controlRobot()
+        private void controlRobot(object state)
         {
             // Data array for motor angle and motor velocity
             // Byte 1: motor soll angle
             // Byte 2: motor velocity
             int[] controlData = new int[3];
 
-            while (!globalDataSet.AbortActionSelector)
+            //while (!globalDataSet.AbortActionSelector)
+            //{
+            // Single step forward
+            if (globalDataSet.AutoModeIsActive)
             {
-                // Single step forward
-                if (globalDataSet.AutoModeIsActive)
+                // Here we do the following:
+                // 1. Set motor id
+                // 2. Get a row from motor table (for specific movement context, i.e. step forward, step backward, etc.)
+                // 3. Check if current duration is equal to time value in the row of the motor table
+                //   3.1 This time value specifies the moment of a turning point
+                // 4. Check if current motor is in state <init>
+                //   4.1 If motor is in state <init> set the control data and increment the row counter        
+                //   4.2 If motor is not in state <init> set no control data --> TODO: Maybe we need to change this behaviour
+                // 5. Increment the duration value 
+                for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                 {
-                    // Here we do the following:
-                    // 1. Set motor id
-                    // 2. Get a row from motor table (for specific movement context, i.e. step forward, step backward, etc.)
-                    // 3. Check if current duration is equal to time value in the row of the motor table
-                    //   3.1 This time value specifies the moment of a turning point
-                    // 4. Check if current motor is in state <init>
-                    //   4.1 If motor is in state <init> set the control data and increment the row counter        
-                    //   4.2 If motor is not in state <init> set no control data --> TODO: Maybe we need to change this behaviour
-                    // 5. Increment the duration value 
-                    for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
+                    //Debug.WriteLine(motorCounter);
+
+                    // Get control data for specific motor (angle, velocity, time)
+                    controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
+
+                    // Check if actual sampletime equal to time value in actual row of specific motor table
+                    // We need to multiplicate the time value because the smallest value inside database is 1
+                    // For example: 1 (value in database table) * 10 = 10ms (smallest time value)
+                    if (duration == (controlData[2])* 10)
                     {
-                        // Get control data for specific motor (angle, velocity, time)
-                        controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
-
-                        // Check if actual sampletime equal to time value in actual row of specific motor table
-                        // We need to divide the time value (controlData[2]) because we want to get a return value as int array
-                        if (duration == (controlData[2] / 10))
+                        // Set control data for specific motor when:
+                        //  - Current action for specific motor is <doNothing>
+                        //  - Incoming action state for specific motor is <init>
+                        // NOTE: This will control the motor when the state is as init only!
+                        if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
                         {
-                            // Set control data for specific motor when:
-                            //  - Current action for specific motor is <doNothing>
-                            //  - Incoming action state for specific motor is <init>
-                            if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                            {
-                                // Set motor id
-                                globalDataSet.MotorId = motorCounter;
+                            // Set motor id
+                            globalDataSet.MotorId = motorCounter;
 
-                                // Get endposition from local db and set it to global data
-                                globalDataSet.MotorSollAngle = controlData[0];
+                            // Get endposition from local db and set it to global data
+                            globalDataSet.MotorSollAngle = controlData[0];
 
-                                // Set velocity
-                                globalDataSet.MotorSollVelocity = controlData[1];
+                            // Set velocity
+                            globalDataSet.MotorSollVelocity = controlData[1];
 
-                                // Set task number for new position
-                                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+                            // Set task number for new position
+                            globalDataSet.Action[motorCounter] = GlobalDataSet.RobotActions.newPosition;
 
-                                // Increment the counter for row in a motor table to get the next control value (angle, velocity)
-                                // If last row is reached reset the counter to zero
-                                if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
-                                else globalDataSet.ControlDataRowCounter[motorCounter] = 0;
-                            }
+                            // Increment the counter for row in a motor table to get the next control value (angle, velocity)
+                            // If last row is reached reset the counter to zero
+                            if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
+
+                    Debug.WriteLine(motorCounter + ";" + controlData[0] + ";" + controlData[1] + ";" + globalDataSet.Action[motorCounter] + ";" + globalDataSet.ControlDataRowCounter[motorCounter] + ";" + duration);
+                            //Thread.Sleep(20);
                         }
                     }
-                    duration = duration + SAMPLE_TIME;
                 }
+
+                resetValue = 0;
+                resetDurationCounter = true;
+
+                for (int i = 0; i < globalDataSet.ControlDataRowCounter.Length-resetValue; i++)
+                {
+                    if (globalDataSet.ControlDataRowCounter[i] < globalDataSet.ControlDataMaxRows[i])
+                    {
+                        resetDurationCounter = false;
+                        //resetValue = globalDataSet.ControlDataRowCounter.Length;
+                    }
+                    else  globalDataSet.ControlDataRowCounter[i] = 0;
+                }
+                if (resetDurationCounter) duration = 0;
+                else duration = duration + SAMPLE_TIME;
+                //TODO: Array of duration values for every motor
+                // Motor class with parameters (getter, setter)
             }
+            //}
         }
 
         ///\brief Getting control data from local database.
@@ -162,7 +190,7 @@ namespace RobotControlServer
                 {
                     MySqlCommand cmd = connection.CreateCommand();
                     // Iterate through remote db for every motorId, i.e. s0, s1, etc.
-                    for (int motorId = 0; motorId < globalDataSet.MAX_MOTOR_AMOUNT; motorId++)
+                    for (int motorId = 1; motorId <= globalDataSet.MAX_MOTOR_AMOUNT; motorId++)
                     {
                         // Get content of specific table in remote db
                         cmd.CommandText = "SELECT * FROM m" + motorId;
@@ -173,29 +201,29 @@ namespace RobotControlServer
                         try
                         {
                             // Get max rows from current table in remote database
-                            int maxTableRow = dataSetRemote.Tables[motorId].Rows.Count;
+                            int maxTableRow = dataSetRemote.Tables[motorId - 1].Rows.Count;
 
                             // Copy row by row to specific table in local db
                             for (int rowCounter = 0; rowCounter < maxTableRow; rowCounter++)
                             {
                                 // Get a row from specific table of remote db
-                                dataRowRemote = dataSetRemote.Tables[motorId].Rows[rowCounter];
+                                dataRowRemote = dataSetRemote.Tables[motorId - 1].Rows[rowCounter];
 
                                 // Create new row in specific table of local db
-                                dataRowLocal = dataSetLocal.Tables[motorId].NewRow();
+                                dataRowLocal = dataSetLocal.Tables[motorId - 1].NewRow();
 
                                 // Copy every item of the remote table row to local table row
-                                for (int itemCounter = 0; itemCounter < dataSetRemote.Tables[motorId].Columns.Count; itemCounter++) dataRowLocal[itemCounter] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
+                                for (int itemCounter = 0; itemCounter < dataSetRemote.Tables[motorId - 1].Columns.Count; itemCounter++) dataRowLocal[itemCounter] = (int)dataRowRemote.ItemArray.GetValue(itemCounter);
 
                                 // Set new row to table of local db
-                                dataSetLocal.Tables[motorId].Rows.Add(dataRowLocal);
+                                dataSetLocal.Tables[motorId - 1].Rows.Add(dataRowLocal);
                             }
 
                             // Upodate local db
                             localDatabaseManager.UpdateDatabase(dataSetLocal, localDbDescription);
 
                             // Save amount of rows for each table
-                            globalDataSet.ControlDataMaxRows[motorId] = maxTableRow;
+                            globalDataSet.ControlDataMaxRows[motorId - 1] = maxTableRow;
                         }
                         catch (Exception err)
                         {

@@ -102,6 +102,7 @@ namespace RobotControlServer
             //dataAdapter3.Fill(dataSet, "m3");
 
             dataBase_connection.Close();
+            dataBase_connection.Dispose();
 
             return dataSet;
         }

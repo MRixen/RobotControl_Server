@@ -13,7 +13,7 @@
         <member name="M:RobotControlServer.ActionSelector.#ctor(Packager.GlobalDataSet)">
             Constructor of the ActionSelector class
         </member>
-        <member name="M:RobotControlServer.ActionSelector.controlRobot">
+        <member name="M:RobotControlServer.ActionSelector.controlRobot(System.Object)">
             \brief Start controlling the robot.
             In every cycle:
             Check incoming dta (vision, stand up stability, etc.).

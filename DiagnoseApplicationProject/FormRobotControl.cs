@@ -73,7 +73,7 @@ namespace FormRobotControlServer
             // Check sensor alive in background
             bWorker_IndicatorLed.RunWorkerAsync();
 
-            //ActionSelector actionSelector = new ActionSelector(globalDataSet);
+            ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
 
         private void FormDatabase_Load(object sender, EventArgs e)
@@ -117,26 +117,26 @@ namespace FormRobotControlServer
 
             while (true)
             {
-                if (globalDataSet.IndicatorLed[globalDataSet.MotorId - 1] & !iconLock_green[globalDataSet.MotorId - 1])
+                if (globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_green[globalDataSet.MotorId])
                 {
                     if (IsHandleCreated)
                     {
                         // Show green icon in gui
-                        iconLock_green[globalDataSet.MotorId-1] = true;
-                        iconLock_red[globalDataSet.MotorId - 1] = false;
-                        label_aliveIcons[globalDataSet.MotorId - 1].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId - 1].BackColor = Color.LightGreen; });
+                        iconLock_green[globalDataSet.MotorId] = true;
+                        iconLock_red[globalDataSet.MotorId] = false;
+                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.LightGreen; });
 
                     }
 
                 }
-                if (!globalDataSet.IndicatorLed[globalDataSet.MotorId - 1] & !iconLock_red[globalDataSet.MotorId - 1])
+                if (!globalDataSet.IndicatorLed[globalDataSet.MotorId] & !iconLock_red[globalDataSet.MotorId])
                 {
                     if (IsHandleCreated)
                     {
                         // Show red icon in gui
-                        iconLock_red[globalDataSet.MotorId - 1] = true;
-                        iconLock_green[globalDataSet.MotorId - 1] = false;
-                        label_aliveIcons[globalDataSet.MotorId - 1].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId - 1].BackColor = Color.Red; });
+                        iconLock_red[globalDataSet.MotorId] = true;
+                        iconLock_green[globalDataSet.MotorId] = false;
+                        label_aliveIcons[globalDataSet.MotorId].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.MotorId].BackColor = Color.Red; });
 
                     }
                 }
