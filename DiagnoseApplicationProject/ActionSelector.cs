@@ -30,10 +30,11 @@ namespace RobotControlServer
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
         private long duration = 0;
-        private const int SAMPLE_TIME = 10; // In milliseconds
+        private const int SAMPLE_TIME = 500; // In milliseconds
         private Timer controlTimer;
         private bool resetDurationCounter = true;
         private int resetValue = 0;
+
 
         /// Constructor of the ActionSelector class
         public ActionSelector(GlobalDataSet globalDataSet)
@@ -46,7 +47,7 @@ namespace RobotControlServer
             // Start robot control as a timer
             controlTimer = new Timer(this.controlRobot, null, 0, SAMPLE_TIME);
 
-            //loadDatabaseThread = new Thread(controlRobot);
+            loadDatabaseThread = new Thread(controlRobot);
             //loadDatabaseThread.Start();
         }
 
@@ -87,31 +88,37 @@ namespace RobotControlServer
                     // Check if actual sampletime equal to time value in actual row of specific motor table
                     // We need to multiplicate the time value because the smallest value inside database is 1
                     // For example: 1 (value in database table) * 10 = 10ms (smallest time value)
-                    if (duration == (controlData[2])* 10)
+                    if (duration == (controlData[2]) * 10)
                     {
                         // Set control data for specific motor when:
                         //  - Current action for specific motor is <doNothing>
                         //  - Incoming action state for specific motor is <init>
                         // NOTE: This will control the motor when the state is as init only!
-                        if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                        //if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
+                        if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
                         {
                             // Set motor id
-                            globalDataSet.MotorId = motorCounter;
+                            //globalDataSet.MotorId = motorCounter;
+                            globalDataSet.Motor[motorCounter].Id = motorCounter+1;
 
                             // Get endposition from local db and set it to global data
-                            globalDataSet.MotorSollAngle = controlData[0];
+                            //globalDataSet.MotorSollAngle = controlData[0];
+                            globalDataSet.Motor[motorCounter].Angle = controlData[0];
 
                             // Set velocity
-                            globalDataSet.MotorSollVelocity = controlData[1];
+                            //globalDataSet.MotorSollVelocity = controlData[1];
+                            globalDataSet.Motor[motorCounter].Velocity = controlData[1];
 
                             // Set task number for new position
-                            globalDataSet.Action[motorCounter] = GlobalDataSet.RobotActions.newPosition;
+                            //globalDataSet.Action[motorCounter] = GlobalDataSet.RobotActions.newPosition;
+                            globalDataSet.Motor[motorCounter].Action = GlobalDataSet.RobotActions.newPosition;
 
                             // Increment the counter for row in a motor table to get the next control value (angle, velocity)
                             // If last row is reached reset the counter to zero
-                            if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
+                            //if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
+                            if (globalDataSet.Motor[motorCounter].RowCounter != globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
 
-                    Debug.WriteLine(motorCounter + ";" + controlData[0] + ";" + controlData[1] + ";" + globalDataSet.Action[motorCounter] + ";" + globalDataSet.ControlDataRowCounter[motorCounter] + ";" + duration);
+                            //Debug.WriteLine(globalDataSet.Motor[motorCounter].Id + ";" + globalDataSet.Motor[motorCounter].Angle + ";" + globalDataSet.Motor[motorCounter].Velocity + ";" + globalDataSet.Motor[motorCounter].Action + ";" + globalDataSet.ControlDataRowCounter[motorCounter] + ";" + duration);
                             //Thread.Sleep(20);
                         }
                     }
@@ -120,14 +127,14 @@ namespace RobotControlServer
                 resetValue = 0;
                 resetDurationCounter = true;
 
-                for (int i = 0; i < globalDataSet.ControlDataRowCounter.Length-resetValue; i++)
+                for (int i = 0; i < globalDataSet.ControlDataRowCounter.Length - resetValue; i++)
                 {
                     if (globalDataSet.ControlDataRowCounter[i] < globalDataSet.ControlDataMaxRows[i])
                     {
                         resetDurationCounter = false;
                         //resetValue = globalDataSet.ControlDataRowCounter.Length;
                     }
-                    else  globalDataSet.ControlDataRowCounter[i] = 0;
+                    else globalDataSet.ControlDataRowCounter[i] = 0;
                 }
                 if (resetDurationCounter) duration = 0;
                 else duration = duration + SAMPLE_TIME;
@@ -223,7 +230,8 @@ namespace RobotControlServer
                             localDatabaseManager.UpdateDatabase(dataSetLocal, localDbDescription);
 
                             // Save amount of rows for each table
-                            globalDataSet.ControlDataMaxRows[motorId - 1] = maxTableRow;
+                            //globalDataSet.ControlDataMaxRows[motorId - 1] = maxTableRow;
+                            globalDataSet.Motor[motorId - 1].MaxRows = maxTableRow;
                         }
                         catch (Exception err)
                         {

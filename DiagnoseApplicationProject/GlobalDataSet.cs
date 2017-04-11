@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Packager;
 using System.Windows.Forms;
+using FormRobotControlServer;
+using RobotControlServer;
 
 namespace Packager
 {
@@ -24,6 +26,7 @@ namespace Packager
         private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
+        private byte[] currentRecValuesTest = new byte[MAX_MOTORS];
         /// controlDataMaxRow includes the maximum number of rows of motor table (for all motors)
         private int[] controlDataMaxRow = new int[MAX_MOTORS];
 
@@ -38,7 +41,7 @@ namespace Packager
         private int motorSollVelocity = 0;
         private int motorSollAngle = 0;
         private bool autoModeIsActive = false;
-
+        private Motor[] motor = new Motor[MAX_MOTORS];
         public GlobalDataSet()
         {
             // Init data array            
@@ -50,6 +53,8 @@ namespace Packager
 
             // Init control data counter array 
             for (int i = 0; i < MAX_MOTORS; i++) controlDataRowCounter[i] = 0;
+
+            for (int i = 0; i < MAX_MOTORS; i++) motor[i] = new Motor();
         }
 
         public enum RobotActions
@@ -210,6 +215,19 @@ namespace Packager
             }
         }
 
+                public byte[] DataPackage_In_Test
+        {
+            get
+            {
+                return currentRecValuesTest;
+            }
+
+            set
+            {
+                currentRecValuesTest = value;
+            }
+        }
+
         public RobotCompletetions Robot_Completion
         {
             get
@@ -354,6 +372,19 @@ namespace Packager
             set
             {
                 controlDataRowCounter = value;
+            }
+        }
+
+        public Motor[] Motor
+        {
+            get
+            {
+                return motor;
+            }
+
+            set
+            {
+                motor = value;
             }
         }
     }

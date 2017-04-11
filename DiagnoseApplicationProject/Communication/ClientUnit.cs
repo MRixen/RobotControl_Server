@@ -70,9 +70,9 @@ namespace Networking
 
         public bool clientInit()
         {
-            String ip = "192.168.0.88";
+            //String ip = "192.168.0.88";
             //String ip = "192.168.1.3";
-            //String ip = "127.0.0.1";
+            String ip = "127.0.0.1";
             int port = 4555;
             ipAddress = Dns.GetHostAddresses(ip);
 

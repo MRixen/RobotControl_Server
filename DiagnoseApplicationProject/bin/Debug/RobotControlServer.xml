@@ -94,25 +94,25 @@
              Every cycle the algorithm send 8 byte via tcp/ip to the client
              One data block per send cycle contains the data for one motor
             
-             1. byte: action
-             2. byte: motor id
-             3. byte: velocity
+             0. byte: action
+             1. byte: motor id
+             2. byte: velocity
+             3. byte: angle
              4. byte: angle
-             5. byte: angle
-             6. byte: Direction of the motor 
+             5. byte: Direction of the motor 
+             6. byte: 
              7. byte: 
-             8. byte: 
             
              <B>PACKAGE CONSTRUCT INCOMING</B>
              
-             1. byte: action
-             2. byte: motor id
-             3. byte: action state
+             0. byte: action
+             1. byte: motor id
+             2. byte: action state
+             3. byte: 
              4. byte: 
              5. byte: 
              6. byte: 
-             7. byte: 
-             8. byte:                                   
+             7. byte:                                   
         </member>
         <member name="M:Packager.DataPackager.#ctor(Packager.GlobalDataSet)">
             Constructor of the Packager class

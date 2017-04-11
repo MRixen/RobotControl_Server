@@ -147,7 +147,13 @@ namespace Networking
                     }
            
                     // Set received data to global data array
-                    globalDataSet.DataPackage_In[globalDataSet.MotorId] = receiver();
+                    //globalDataSet.DataPackage_In[globalDataSet.MotorId] = receiver();
+                    globalDataSet.DataPackage_In_Test = receiver();
+
+                    // Decrement motor id to prevent exception (index start at 1 but with no motor selected the index is 0)
+                    // Get action state for current motor 
+                    if (globalDataSet.DataPackage_In_Test[1] == 0) globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1]].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
+                    else globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
 
                     //for (int i = 0; i < globalDataSet.DataPackage_In.Length; i++) Debug.WriteLine("receive_bytes[" + i + "]: " + globalDataSet.DataPackage_In[i]);
 
@@ -165,7 +171,7 @@ namespace Networking
                 NetworkStream networkStream_server_send = clientSocket_send.GetStream();
                 networkStream_server_send.Write(message, 0, message.Length);
                 networkStream_server_send.Flush();
-                for (int i = 0; i < message.Length; i++) Debug.WriteLine("send message[" + i + "]: " + message[i]);
+                //for (int i = 0; i < message.Length; i++) Debug.WriteLine("send message[" + i + "]: " + message[i]);
 
                 //Debug.WriteLine("send message[" + 3 + "]: " + message[3]);
                 //Debug.WriteLine("send message[" + 4 + "]: " + message[4]);

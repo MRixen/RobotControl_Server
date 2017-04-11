@@ -33,6 +33,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupBox_robotControl = new System.Windows.Forms.GroupBox();
             this.label_motorId = new System.Windows.Forms.Label();
+            this.checkBox_disablePidController = new System.Windows.Forms.CheckBox();
             this.textBox_motorId = new System.Windows.Forms.TextBox();
             this.label_soll_angle = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -40,7 +41,7 @@
             this.button_saveRefPos = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.groupBox_tasks = new System.Windows.Forms.GroupBox();
-            this.checkBox_disablePidController = new System.Windows.Forms.CheckBox();
+            this.checkBox_AutoMode = new System.Windows.Forms.CheckBox();
             this.label_aliveIcon_1 = new System.Windows.Forms.Label();
             this.bWorker_IndicatorLed = new System.ComponentModel.BackgroundWorker();
             this.label_aliveIcon_2 = new System.Windows.Forms.Label();
@@ -51,7 +52,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label_aliveIcon_4 = new System.Windows.Forms.Label();
             this.label_aliveIcon_3 = new System.Windows.Forms.Label();
-            this.checkBox_AutoMode = new System.Windows.Forms.CheckBox();
             this.groupBox_robotControl.SuspendLayout();
             this.groupBox_tasks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -90,6 +90,17 @@
             this.label_motorId.Size = new System.Drawing.Size(59, 17);
             this.label_motorId.TabIndex = 7;
             this.label_motorId.Text = "Motor id";
+            // 
+            // checkBox_disablePidController
+            // 
+            this.checkBox_disablePidController.AutoSize = true;
+            this.checkBox_disablePidController.Location = new System.Drawing.Point(9, 282);
+            this.checkBox_disablePidController.Name = "checkBox_disablePidController";
+            this.checkBox_disablePidController.Size = new System.Drawing.Size(168, 21);
+            this.checkBox_disablePidController.TabIndex = 3;
+            this.checkBox_disablePidController.Text = "Disable PID Controller";
+            this.checkBox_disablePidController.UseVisualStyleBackColor = true;
+            this.checkBox_disablePidController.CheckedChanged += new System.EventHandler(this.checkChanged_disablePidController);
             // 
             // textBox_motorId
             // 
@@ -156,16 +167,16 @@
             this.groupBox_tasks.TabStop = false;
             this.groupBox_tasks.Text = "Settings";
             // 
-            // checkBox_disablePidController
+            // checkBox_AutoMode
             // 
-            this.checkBox_disablePidController.AutoSize = true;
-            this.checkBox_disablePidController.Location = new System.Drawing.Point(9, 282);
-            this.checkBox_disablePidController.Name = "checkBox_disablePidController";
-            this.checkBox_disablePidController.Size = new System.Drawing.Size(168, 21);
-            this.checkBox_disablePidController.TabIndex = 3;
-            this.checkBox_disablePidController.Text = "Disable PID Controller";
-            this.checkBox_disablePidController.UseVisualStyleBackColor = true;
-            this.checkBox_disablePidController.CheckedChanged += new System.EventHandler(this.checkChanged_disablePidController);
+            this.checkBox_AutoMode.AutoSize = true;
+            this.checkBox_AutoMode.Location = new System.Drawing.Point(7, 24);
+            this.checkBox_AutoMode.Name = "checkBox_AutoMode";
+            this.checkBox_AutoMode.Size = new System.Drawing.Size(98, 21);
+            this.checkBox_AutoMode.TabIndex = 4;
+            this.checkBox_AutoMode.Text = "Auto mode";
+            this.checkBox_AutoMode.UseVisualStyleBackColor = true;
+            this.checkBox_AutoMode.CheckedChanged += new System.EventHandler(this.checkChanged_autoMode);
             // 
             // label_aliveIcon_1
             // 
@@ -213,7 +224,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 17);
             this.label4.TabIndex = 47;
-            this.label4.Text = "Motor 4";
+            this.label4.Text = "Motor 3";
             // 
             // label3
             // 
@@ -222,7 +233,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 17);
             this.label3.TabIndex = 46;
-            this.label3.Text = "Motor 3";
+            this.label3.Text = "Motor 2";
             // 
             // label2
             // 
@@ -231,7 +242,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 17);
             this.label2.TabIndex = 45;
-            this.label2.Text = "Motor 2";
+            this.label2.Text = "Motor 1";
             // 
             // label1
             // 
@@ -240,7 +251,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(56, 17);
             this.label1.TabIndex = 44;
-            this.label1.Text = "Motor 1";
+            this.label1.Text = "Motor 0";
             // 
             // label_aliveIcon_4
             // 
@@ -261,17 +272,6 @@
             this.label_aliveIcon_3.Name = "label_aliveIcon_3";
             this.label_aliveIcon_3.Size = new System.Drawing.Size(40, 17);
             this.label_aliveIcon_3.TabIndex = 8;
-            // 
-            // checkBox_AutoMode
-            // 
-            this.checkBox_AutoMode.AutoSize = true;
-            this.checkBox_AutoMode.Location = new System.Drawing.Point(7, 24);
-            this.checkBox_AutoMode.Name = "checkBox_AutoMode";
-            this.checkBox_AutoMode.Size = new System.Drawing.Size(98, 21);
-            this.checkBox_AutoMode.TabIndex = 4;
-            this.checkBox_AutoMode.Text = "Auto mode";
-            this.checkBox_AutoMode.UseVisualStyleBackColor = true;
-            this.checkBox_AutoMode.CheckedChanged += new System.EventHandler(this.checkChanged_autoMode);
             // 
             // FormRobotControl
             // 
