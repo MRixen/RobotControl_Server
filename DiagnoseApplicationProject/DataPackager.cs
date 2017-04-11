@@ -52,7 +52,7 @@ namespace Packager
 
     class DataPackager
     {
-        public delegate void DataPackagedEventHandler(byte[] dataPackage);
+        public delegate void DataPackagedEventHandler(byte[][] dataPackage);
         public event DataPackagedEventHandler newPackageEvent; //!< This event is fired after new data is packaged
 
         private Thread serverThread_packaging; //!< This thread is necessary to run the packaging loop
@@ -100,7 +100,7 @@ namespace Packager
             while (!globalDataSet.AbortServerOperation)
             {
                 // Iterate through the motor array
-                for (int motorCounter = 0; motorCounter < globalDataSet.Motor.Length; motorCounter++)
+                for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                 {
                     //Debug.WriteLine(globalDataSet.Motor[motorCounter].Id + ";" + globalDataSet.Motor[motorCounter].Angle + ";" + globalDataSet.Motor[motorCounter].Velocity + ";" + globalDataSet.Motor[motorCounter].Action + ";" + globalDataSet.ControlDataRowCounter[motorCounter]);
 
@@ -114,6 +114,7 @@ namespace Packager
                         globalDataSet.IndicatorLed[motorCounter] = true;
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         for (int i = 1; i < globalDataSet.MAX_DATAPACKAGE_ELEMENTS; i++) dataPackage_out[motorCounter][i] = 0;
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
 
@@ -130,6 +131,7 @@ namespace Packager
                     if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveToEeprom) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
                     {
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
 
@@ -202,20 +204,22 @@ namespace Packager
                     }
 
                     // TODO: motor id zählt hoch (1, 2) aber gesendet wird nur 1 oder 2
-                    Debug.WriteLine(dataPackage_out[motorCounter][1]);
-                    Debug.WriteLine("motorCounter " + motorCounter);
+                    //Debug.WriteLine(dataPackage_out[motorCounter][1]);
+                    //Debug.WriteLine("motorCounter " + motorCounter);
 
                     // Fire event that server can handle new data
-                    if (newData)
+                    // Only at the end when the hole datapackage with all motor ids is packed
+                    if (newData & (motorCounter == globalDataSet.Motor.Length-1))
                     {
                         newData = false;
-                        this.newPackageEvent((byte[])dataPackage_out.GetValue(motorCounter));
+                        byte[] tempByte = (byte[])dataPackage_out.GetValue(motorCounter);
+                        //for (int i = 0; i < tempByte.Length; i++) Debug.WriteLine("tempByte: " + tempByte[i]);
+                        //Debug.WriteLine("Task completed");
+
+                        this.newPackageEvent(dataPackage_out);
                     }
-                    Thread.Sleep(800);
+                    Thread.Sleep(500);
                 }
-                    Thread.Sleep(800);
-                //Debug.WriteLine("state " + globalDataSet.DataPackage_In[(int)GlobalDataSet.Incoming_Package_Content.actionState]);
-                //Debug.WriteLine("action " + globalDataSet.Action);
             }
         }
     }

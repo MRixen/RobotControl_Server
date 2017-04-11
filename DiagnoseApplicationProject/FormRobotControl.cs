@@ -15,6 +15,7 @@ using MySql.Data.MySqlClient;
 using Packager;
 using Networking;
 using RobotControlServer;
+using System.Threading;
 
 namespace FormRobotControlServer
 {
@@ -37,6 +38,7 @@ namespace FormRobotControlServer
         private GlobalDataSet globalDataSet;
         private DataPackager dataPackager;
         private ServerUnit tcpServer = null;
+        private Thread indicatorLedThread;
 
         Stopwatch timer_timeStamp = new Stopwatch();
 
@@ -54,7 +56,6 @@ namespace FormRobotControlServer
             sampleStep = DEFAULT_SAMPLE_TIME_FACTOR;
             aliveBit = false;
             notExecuted = true;
-            bWorker_IndicatorLed.DoWork += new DoWorkEventHandler(bWorker_IndicatorLed_DoWork);
 
             // User defines
             globalDataSet.DebugMode = false;
@@ -71,7 +72,8 @@ namespace FormRobotControlServer
             dataPackager.startPackaging();
 
             // Check sensor alive in background
-            bWorker_IndicatorLed.RunWorkerAsync();
+            indicatorLedThread = new Thread(new ThreadStart(indicatorLed));
+            indicatorLedThread.Start();
 
             ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
@@ -107,42 +109,32 @@ namespace FormRobotControlServer
             else { }
         }
 
-        private void bWorker_IndicatorLed_DoWork(object sender, DoWorkEventArgs e)
+        private void indicatorLed()
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
-            bool[] iconLock_green = { false, false, false, false };
-            bool[] iconLock_red = { false, false, false, false };
-            Label[] label_aliveIcons = { label_aliveIcon_1, label_aliveIcon_2, label_aliveIcon_3, label_aliveIcon_4 };
-
+            Label[] label_aliveIcons = { label_aliveIcon_1, label_aliveIcon_2};
 
             while (true)
             {
-                for (int i = 0; i < globalDataSet.Motor.Length-1; i++)
+                for (int ledCounter = 0; ledCounter < 2; ledCounter++)
                 {
-                    if (globalDataSet.IndicatorLed[globalDataSet.Motor[i].Id] & !iconLock_green[globalDataSet.Motor[i].Id])
+                    int counter = ledCounter;
+                    if (globalDataSet.IndicatorLed[ledCounter])
                     {
                         if (IsHandleCreated)
                         {
                             // Show green icon in gui
-                            iconLock_green[globalDataSet.Motor[i].Id] = true;
-                            iconLock_red[globalDataSet.Motor[i].Id] = false;
-                            label_aliveIcons[globalDataSet.Motor[i].Id].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.Motor[i].Id].BackColor = Color.LightGreen; });
-
+                            label_aliveIcons[counter].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[counter].BackColor = Color.LightGreen; });
                         }
-
                     }
-                    if (!globalDataSet.IndicatorLed[globalDataSet.Motor[i].Id] & !iconLock_red[globalDataSet.Motor[i].Id])
+                    if (!globalDataSet.IndicatorLed[ledCounter])
                     {
                         if (IsHandleCreated)
                         {
                             // Show red icon in gui
-                            iconLock_red[globalDataSet.Motor[i].Id] = true;
-                            iconLock_green[globalDataSet.Motor[i].Id] = false;
-                            label_aliveIcons[globalDataSet.Motor[i].Id].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[globalDataSet.Motor[i].Id].BackColor = Color.Red; });
-
+                            label_aliveIcons[counter].BeginInvoke((MethodInvoker)delegate () { label_aliveIcons[counter].BackColor = Color.Red; });
                         }
                     }
-
+                    Thread.Sleep(20);
                 }
             }
         }

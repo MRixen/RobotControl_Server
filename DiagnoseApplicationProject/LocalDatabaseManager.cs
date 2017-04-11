@@ -89,18 +89,6 @@ namespace RobotControlServer
                 dataAdapter = new SqlDataAdapter("SELECT * FROM m"+i, dataBase_connection);
                 dataAdapter.Fill(dataSet, "m"+i);
             }
-            //dataAdapter = new SqlDataAdapter("SELECT * FROM m0", dataBase_connection);
-            //dataAdapter.Fill(dataSet, "m0");
-
-            //dataAdapter1 = new SqlDataAdapter("SELECT * FROM m1", dataBase_connection);
-            //dataAdapter1.Fill(dataSet, "m1");
-
-            //dataAdapter2 = new SqlDataAdapter("SELECT * FROM m2", dataBase_connection);
-            //dataAdapter2.Fill(dataSet, "m2");
-
-            //dataAdapter3 = new SqlDataAdapter("SELECT * FROM m3", dataBase_connection);
-            //dataAdapter3.Fill(dataSet, "m3");
-
             dataBase_connection.Close();
             dataBase_connection.Dispose();
 

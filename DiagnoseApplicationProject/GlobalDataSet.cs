@@ -36,7 +36,7 @@ namespace Packager
         private RobotOptions robotOption = RobotOptions.nothingSelected;
         private RobotCompletetions robotCompletion = RobotCompletetions.incomplete;
         private ActionStates robotPending = ActionStates.init;
-        private bool[] indicatorLed = { false, false, false, false };
+        private bool[] indicatorLed = new bool[MAX_MOTORS];
         private int motorId = 1;
         private int motorSollVelocity = 0;
         private int motorSollAngle = 0;
@@ -44,11 +44,12 @@ namespace Packager
         private Motor[] motor = new Motor[MAX_MOTORS];
         public GlobalDataSet()
         {
-            // Init data array            
+            // Init data arrays           
             for (int i = 0; i < MAX_MOTORS; i++)
             {
                 currentRecValues[i] = new byte[8];
                 for (int j = 0; j < MAX_DATAPACKAGE_ELEMENT; j++) currentRecValues[i][j] = 0;
+                indicatorLed[i] = false;
             }
 
             // Init control data counter array 

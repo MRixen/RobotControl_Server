@@ -29,8 +29,8 @@ namespace RobotControlServer
 
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
-        private long duration = 0;
-        private const int SAMPLE_TIME = 500; // In milliseconds
+        private long[] duration;
+        private const int SAMPLE_TIME = 10; // In milliseconds
         private Timer controlTimer;
         private bool resetDurationCounter = true;
         private int resetValue = 0;
@@ -41,14 +41,21 @@ namespace RobotControlServer
         {
             this.globalDataSet = globalDataSet;
 
+            // Inititialize
+            duration = new long[globalDataSet.MAX_MOTOR_AMOUNT];
+            for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++) duration[i] = 0;
+
+            // Start task to get all data from remote database
             Task loadDatabaseTask = Task.Factory.StartNew(() => updateLocalDatabase());
             loadDatabaseTask.Wait();
+
+            // Create datasets from local db
+            dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
 
             // Start robot control as a timer
             controlTimer = new Timer(this.controlRobot, null, 0, SAMPLE_TIME);
 
             loadDatabaseThread = new Thread(controlRobot);
-            //loadDatabaseThread.Start();
         }
 
 
@@ -64,8 +71,6 @@ namespace RobotControlServer
             // Byte 2: motor velocity
             int[] controlData = new int[3];
 
-            //while (!globalDataSet.AbortActionSelector)
-            //{
             // Single step forward
             if (globalDataSet.AutoModeIsActive)
             {
@@ -80,15 +85,17 @@ namespace RobotControlServer
                 // 5. Increment the duration value 
                 for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                 {
+                    //TODO: Nach zweiten Wert zählt duration zu weit hoch
+
                     //Debug.WriteLine(motorCounter);
 
                     // Get control data for specific motor (angle, velocity, time)
-                    controlData = getControlData(motorCounter, globalDataSet.ControlDataRowCounter[motorCounter]);
+                    controlData = getControlData(motorCounter, globalDataSet.Motor[motorCounter].RowCounter);
 
                     // Check if actual sampletime equal to time value in actual row of specific motor table
                     // We need to multiplicate the time value because the smallest value inside database is 1
                     // For example: 1 (value in database table) * 10 = 10ms (smallest time value)
-                    if (duration == (controlData[2]) * 10)
+                    if (duration[motorCounter] == (controlData[2]) * 10)
                     {
                         // Set control data for specific motor when:
                         //  - Current action for specific motor is <doNothing>
@@ -99,7 +106,7 @@ namespace RobotControlServer
                         {
                             // Set motor id
                             //globalDataSet.MotorId = motorCounter;
-                            globalDataSet.Motor[motorCounter].Id = motorCounter+1;
+                            globalDataSet.Motor[motorCounter].Id = motorCounter + 1;
 
                             // Get endposition from local db and set it to global data
                             //globalDataSet.MotorSollAngle = controlData[0];
@@ -114,34 +121,34 @@ namespace RobotControlServer
                             globalDataSet.Motor[motorCounter].Action = GlobalDataSet.RobotActions.newPosition;
 
                             // Increment the counter for row in a motor table to get the next control value (angle, velocity)
-                            // If last row is reached reset the counter to zero
-                            //if (globalDataSet.ControlDataRowCounter[motorCounter] != globalDataSet.ControlDataMaxRows[motorCounter]) globalDataSet.ControlDataRowCounter[motorCounter]++;
-                            if (globalDataSet.Motor[motorCounter].RowCounter != globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
-
-                            //Debug.WriteLine(globalDataSet.Motor[motorCounter].Id + ";" + globalDataSet.Motor[motorCounter].Angle + ";" + globalDataSet.Motor[motorCounter].Velocity + ";" + globalDataSet.Motor[motorCounter].Action + ";" + globalDataSet.ControlDataRowCounter[motorCounter] + ";" + duration);
-                            //Thread.Sleep(20);
+                            if (globalDataSet.Motor[motorCounter].RowCounter < globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
                         }
                     }
-                }
 
-                resetValue = 0;
-                resetDurationCounter = true;
-
-                for (int i = 0; i < globalDataSet.ControlDataRowCounter.Length - resetValue; i++)
-                {
-                    if (globalDataSet.ControlDataRowCounter[i] < globalDataSet.ControlDataMaxRows[i])
+                    // If last row is reached reset the counter to zero and reset the duration value
+                    if (globalDataSet.Motor[motorCounter].RowCounter == globalDataSet.Motor[motorCounter].MaxRows)
                     {
-                        resetDurationCounter = false;
-                        //resetValue = globalDataSet.ControlDataRowCounter.Length;
+                        globalDataSet.Motor[motorCounter].RowCounter = 0;
+                        duration[motorCounter] = 0;
                     }
-                    else globalDataSet.ControlDataRowCounter[i] = 0;
+                    // Increase duration value to get next inflection point
+                    else duration[motorCounter] = duration[motorCounter] + SAMPLE_TIME;
+
+                    if ((duration[0] % 1000) == 0)
+                    {
+                        Debug.WriteLine("duration[0]: " + duration[0]);
+                    }
+                    if ((duration[1] % 1000) == 0)
+                    {
+                        Debug.WriteLine("duration[1]: " + duration[1]);
+                    }
+                    //Debug.WriteLine("RowCounter[0]: " + globalDataSet.Motor[0].RowCounter);
+                    //Debug.WriteLine("RowCounter[1]: " + globalDataSet.Motor[1].RowCounter);
                 }
-                if (resetDurationCounter) duration = 0;
-                else duration = duration + SAMPLE_TIME;
-                //TODO: Array of duration values for every motor
-                // Motor class with parameters (getter, setter)
+
+                // FOR TESTING
+                //globalDataSet.AutoModeIsActive = false;
             }
-            //}
         }
 
         ///\brief Getting control data from local database.
@@ -152,13 +159,10 @@ namespace RobotControlServer
             DataRow dataRowTemp;
             int[] retVal = new int[3];
 
-            // Create dataset fromlocal db
-            dataSetLocal = localDatabaseManager.createDatasetsForDb(localDbDescription);
-
             // Get row from local db
             dataRowTemp = dataSetLocal.Tables[motorId].Rows[increment];
 
-            // Get soll angle and velocity from row
+            // Get soll angle, velocity, etc. from row
             for (int i = 0; i < retVal.Length; i++) retVal[i] = (int)dataRowTemp.ItemArray.GetValue(i + 1);
 
             return retVal;
