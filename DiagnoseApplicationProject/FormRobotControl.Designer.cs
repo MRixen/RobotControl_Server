@@ -48,6 +48,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox_robotControl.SuspendLayout();
             this.groupBox_tasks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -61,6 +62,7 @@
             // 
             // groupBox_robotControl
             // 
+            this.groupBox_robotControl.Controls.Add(this.button2);
             this.groupBox_robotControl.Controls.Add(this.label_motorId);
             this.groupBox_robotControl.Controls.Add(this.checkBox_disablePidController);
             this.groupBox_robotControl.Controls.Add(this.textBox_motorId);
@@ -227,6 +229,16 @@
             this.label1.TabIndex = 44;
             this.label1.Text = "Motor 1";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(154, 168);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(118, 34);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Step forward";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button_stepForward_Click);
+            // 
             // FormRobotControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -274,5 +286,6 @@
         private System.Windows.Forms.Label label_motorId;
         private System.Windows.Forms.TextBox textBox_motorId;
         private System.Windows.Forms.CheckBox checkBox_AutoMode;
+        private System.Windows.Forms.Button button2;
     }
 }

@@ -42,6 +42,8 @@ namespace Packager
         private int motorSollAngle = 0;
         private bool autoModeIsActive = false;
         private Motor[] motor = new Motor[MAX_MOTORS];
+        private bool stepForward;
+
         public GlobalDataSet()
         {
             // Init data arrays           
@@ -386,6 +388,19 @@ namespace Packager
             set
             {
                 motor = value;
+            }
+        }
+
+        public bool StepForward
+        {
+            get
+            {
+                return stepForward;
+            }
+
+            set
+            {
+                stepForward = value;
             }
         }
     }

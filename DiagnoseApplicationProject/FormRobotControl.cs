@@ -182,6 +182,11 @@ namespace FormRobotControlServer
             if (checkBox_AutoMode.Checked) globalDataSet.AutoModeIsActive = true;
             else globalDataSet.AutoModeIsActive = false;
         }
+
+        private void button_stepForward_Click(object sender, EventArgs e)
+        {
+            globalDataSet.StepForward = true;
+        }
     }
 }
 
