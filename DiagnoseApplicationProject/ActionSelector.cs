@@ -30,7 +30,7 @@ namespace RobotControlServer
         private Thread loadDatabaseThread;
         private GlobalDataSet globalDataSet;
         private long[] duration;
-        private const int SAMPLE_TIME = 10; // In milliseconds
+        private const int SAMPLE_TIME = 50; // In milliseconds
         private Timer controlTimer;
         private bool resetDurationCounter = true;
         private int resetValue = 0;
@@ -86,6 +86,7 @@ namespace RobotControlServer
                 for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                 {
                     //TODO: Nach zweiten Wert zählt duration zu weit hoch
+                    // Zu Beginn alle Daten ausgeben, die vor dem Zustand erfüllt sein müssen
 
                     //Debug.WriteLine(motorCounter);
 
@@ -97,6 +98,8 @@ namespace RobotControlServer
                     // For example: 1 (value in database table) * 10 = 10ms (smallest time value)
                     if (duration[motorCounter] == (controlData[2]) * 10)
                     {
+                        Debug.WriteLine("action " + motorCounter + ": " + globalDataSet.Motor[motorCounter].Action);
+                        Debug.WriteLine("state " + motorCounter + ": " + globalDataSet.Motor[motorCounter].State);
                         // Set control data for specific motor when:
                         //  - Current action for specific motor is <doNothing>
                         //  - Incoming action state for specific motor is <init>
@@ -122,6 +125,8 @@ namespace RobotControlServer
 
                             // Increment the counter for row in a motor table to get the next control value (angle, velocity)
                             if (globalDataSet.Motor[motorCounter].RowCounter < globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
+                            Debug.WriteLine("rowCounter 0:" + globalDataSet.Motor[0].RowCounter);
+                            Debug.WriteLine("rowCounter 1:" + globalDataSet.Motor[1].RowCounter);
                         }
                     }
 

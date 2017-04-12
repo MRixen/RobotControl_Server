@@ -218,7 +218,7 @@ namespace Packager
 
                         this.newPackageEvent(dataPackage_out);
                     }
-                    Thread.Sleep(500);
+                    //Thread.Sleep(500);
                 }
             }
         }
