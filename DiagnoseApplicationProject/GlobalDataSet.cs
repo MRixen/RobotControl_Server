@@ -26,7 +26,7 @@ namespace Packager
         private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
-        private byte[] currentRecValuesTest = new byte[MAX_MOTORS];
+        private byte[] currentRecValuesTest = new byte[8];
         /// controlDataMaxRow includes the maximum number of rows of motor table (for all motors)
         private int[] controlDataMaxRow = new int[MAX_MOTORS];
 

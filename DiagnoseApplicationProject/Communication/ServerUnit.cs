@@ -51,6 +51,20 @@ namespace Networking
         {
             // Write new data to current context and change the flag to show the sending thread that new data is available
             this.dataPackage = dataPackage;
+            //byte[] tempByte0 = (byte[])dataPackage.GetValue(0);
+
+            //for (int i = 0; i < tempByte0.Length; i++) { 
+            //    Debug.WriteLine("tempByte0: " + tempByte0[i]);
+            //}
+            //Debug.WriteLine("-------------");
+
+            //byte[] tempByte1 = (byte[])dataPackage.GetValue(1);
+
+            //for (int i = 0; i < tempByte1.Length; i++)
+            //{
+            //    Debug.WriteLine("tempByte1: " + tempByte1[i]);
+            //}
+            //Debug.WriteLine("-------------");
             //newDataFromPackager = true;
         }
 
@@ -153,8 +167,11 @@ namespace Networking
 
                     // Decrement motor id to prevent exception (index start at 1 but with no motor selected the index is 0)
                     // Get action state for current motor 
-                    if (globalDataSet.DataPackage_In_Test[1] == 0) globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1]].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
-                    else globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
+                    if ((globalDataSet.DataPackage_In_Test[1] == 1) | (globalDataSet.DataPackage_In_Test[1] == 2))
+                    {
+                        globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
+                        //Debug.WriteLine("globalDataSet.Motor["+(globalDataSet.DataPackage_In_Test[1] - 1)+"].State: " + globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State);
+                    }
 
                     //for (int i = 0; i < globalDataSet.DataPackage_In.Length; i++) Debug.WriteLine("receive_bytes[" + i + "]: " + globalDataSet.DataPackage_In[i]);
 

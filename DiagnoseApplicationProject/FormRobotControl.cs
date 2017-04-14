@@ -111,7 +111,7 @@ namespace FormRobotControlServer
 
         private void indicatorLed()
         {
-            Label[] label_aliveIcons = { label_aliveIcon_1, label_aliveIcon_2};
+            Label[] label_aliveIcons = { label_aliveIcon_1, label_aliveIcon_2 };
 
             while (true)
             {
@@ -136,6 +136,12 @@ namespace FormRobotControlServer
                     }
                     Thread.Sleep(20);
                 }
+                if (IsHandleCreated)
+                {
+                    // Change label for step forward 
+                    if(globalDataSet.StepForward) label_stepForward.BeginInvoke((MethodInvoker)delegate () { label_stepForward.BackColor = Color.Red; });
+                    else label_stepForward.BeginInvoke((MethodInvoker)delegate () { label_stepForward.BackColor = Color.LightGreen; });
+                }
             }
         }
 
@@ -143,18 +149,38 @@ namespace FormRobotControlServer
         {
             if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
-                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text)].Id = Int32.Parse(textBox_motorId.Text);
                 globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveToEeprom;
+            }
+            else if (checkBox_all_motors.Checked & (!globalDataSet.AutoModeIsActive))
+            {
+                for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                {
+                    globalDataSet.Motor[i].Id = i + 1;
+                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.saveToEeprom;
+                }
             }
         }
 
         private void button_MoveTo_Clicked(object sender, EventArgs e)
         {
-            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
+            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive) & !checkBox_all_motors.Checked)
             {
-                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
-                globalDataSet.MotorSollAngle = Int32.Parse(textBox_soll_angle.Text);
-                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.newPosition;
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Id = Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Angle = Int32.Parse(textBox_soll_angle.Text);
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Action = GlobalDataSet.RobotActions.newPosition;
+                //Debug.WriteLine("globalDataSet.Motor[0].Id: " + globalDataSet.Motor[0].Id);
+                //Debug.WriteLine("globalDataSet.Motor[0].Angle: " + globalDataSet.Motor[0].Angle);
+                //Debug.WriteLine("globalDataSet.Motor[0].Action: " + globalDataSet.Motor[0].Action);
+            }
+            else if (checkBox_all_motors.Checked & (textBox_soll_angle.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
+            {
+                for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                {
+                    globalDataSet.Motor[i].Id = i + 1;
+                    globalDataSet.Motor[i].Angle = Int32.Parse(textBox_soll_angle.Text);
+                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.newPosition;
+                }
             }
         }
 
@@ -162,9 +188,19 @@ namespace FormRobotControlServer
         {
             if (textBox_motorId.Text.Length != 0)
             {
-                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
-                if (checkBox_disablePidController.Checked) globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.disablePidController;
-                else globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.enablePidController;
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Id = Int32.Parse(textBox_motorId.Text);
+
+                if (checkBox_disablePidController.Checked) globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Action = GlobalDataSet.RobotActions.disablePidController;
+                else globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Action = GlobalDataSet.RobotActions.enablePidController;
+            }
+            else if (checkBox_all_motors.Checked & (!globalDataSet.AutoModeIsActive))
+            {
+                for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                {
+                    globalDataSet.Motor[i].Id = i + 1;
+                    if (checkBox_disablePidController.Checked) globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.disablePidController;
+                    else globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.enablePidController;
+                }
             }
         }
 
@@ -172,8 +208,17 @@ namespace FormRobotControlServer
         {
             if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
-                globalDataSet.MotorId = (byte)Int32.Parse(textBox_motorId.Text);
-                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.doNothing;
+
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text)].Id = Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text)].Action = GlobalDataSet.RobotActions.doNothing;
+            }
+            else if (checkBox_all_motors.Checked & (!globalDataSet.AutoModeIsActive))
+            {
+                for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                {
+                    globalDataSet.Motor[i].Id = i + 1;
+                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.doNothing;
+                }
             }
         }
 

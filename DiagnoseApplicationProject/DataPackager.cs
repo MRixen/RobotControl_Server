@@ -108,7 +108,7 @@ namespace Packager
                     // - Actual action for specific motor is <doNothing>
                     // - Incoming action state is <init>
                     //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init) & (globalDataSet.Motor[motorCounter].Id != 0))
                     {
                         // Set indicator led to green
                         globalDataSet.IndicatorLed[motorCounter] = true;
@@ -191,6 +191,12 @@ namespace Packager
                         velocityValueTemp = BitConverter.GetBytes(globalDataSet.Motor[motorCounter].Velocity);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity] = velocityValueTemp[0];
 
+                        //Debug.WriteLine("action: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action]);
+                        //Debug.WriteLine("id: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
+                        //Debug.WriteLine("angle1: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1]);
+                        //Debug.WriteLine("angle2: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2]);
+                        //Debug.WriteLine("vel: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity]);
+
                         newData = true;
                     }
 
@@ -198,8 +204,15 @@ namespace Packager
                     //if (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.complete)
                     if ((int)globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.complete)
                     {
+                        //if (motorCounter == 1) Debug.WriteLine("(int)globalDataSet.Motor["+motorCounter+"].State: " + (int)globalDataSet.Motor[motorCounter].State);
                         globalDataSet.Motor[motorCounter].Action = (int)GlobalDataSet.RobotActions.doNothing;
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)(globalDataSet.Motor[motorCounter].Id);
+                        //Debug.WriteLine("---------------o-------------");
+                        //Debug.WriteLine("action: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.action]);
+                        //Debug.WriteLine("id: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
+                        //Debug.WriteLine("----------------------------");
+
                         newData = true;
                     }
 
@@ -211,10 +224,17 @@ namespace Packager
                     // Only at the end when the hole datapackage with all motor ids is packed
                     if (newData & (motorCounter == globalDataSet.Motor.Length-1))
                     {
+                        //Debug.WriteLine("motorCounter: " + motorCounter);
                         newData = false;
                         byte[] tempByte = (byte[])dataPackage_out.GetValue(motorCounter);
                         //for (int i = 0; i < tempByte.Length; i++) Debug.WriteLine("tempByte: " + tempByte[i]);
-                        //Debug.WriteLine("Task completed");
+                        //Debug.WriteLine("---------------u-------------");
+                        //Debug.WriteLine("action: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.action]);
+                        //Debug.WriteLine("id: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
+                        //Debug.WriteLine("angle1: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1]);
+                        //Debug.WriteLine("angle2: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2]);
+                        //Debug.WriteLine("vel: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity]);
+                        //Debug.WriteLine("----------------------------");
 
                         this.newPackageEvent(dataPackage_out);
                     }

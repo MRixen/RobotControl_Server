@@ -90,11 +90,11 @@ namespace RobotControlServer
                         // Get control data for specific motor (angle, velocity, time)
                         controlData = getControlData(motorCounter, globalDataSet.Motor[motorCounter].RowCounter);
 
-                        Debug.WriteLine("action " + motorCounter + ": " + globalDataSet.Motor[motorCounter].Action);
-                        Debug.WriteLine("state " + motorCounter + ": " + globalDataSet.Motor[motorCounter].State);
-                        Debug.WriteLine("rowCounter " + motorCounter + ":" + globalDataSet.Motor[motorCounter].RowCounter);
-                        Debug.WriteLine("duration " + motorCounter + ":" + duration[motorCounter]);
-                        Debug.WriteLine("-------------------------------------");
+                        //Debug.WriteLine("action " + motorCounter + ": " + globalDataSet.Motor[motorCounter].Action);
+                        //Debug.WriteLine("state " + motorCounter + ": " + globalDataSet.Motor[motorCounter].State);
+                        //Debug.WriteLine("rowCounter " + motorCounter + ":" + globalDataSet.Motor[motorCounter].RowCounter);
+                        //Debug.WriteLine("duration " + motorCounter + ":" + duration[motorCounter]);
+                        //Debug.WriteLine("-------------------------------------");
 
                         // Check if actual sampletime equal to time value in actual row of specific motor table
                         // We need to multiplicate the time value because the smallest value inside database is 1
@@ -128,10 +128,9 @@ namespace RobotControlServer
                                 if (globalDataSet.Motor[motorCounter].RowCounter < globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
                             }
                         }
-                        // If last row is reached reset the counter to zero and reset the duration value
+                        // If last row is reached this action is finished (reset counter, duration and stepForward flag)
                         if (globalDataSet.Motor[motorCounter].RowCounter == globalDataSet.Motor[motorCounter].MaxRows)
                         {
-                            // This action is finished
                             globalDataSet.Motor[motorCounter].RowCounter = 0;
                             duration[motorCounter] = 0;
                             globalDataSet.StepForward = false;
