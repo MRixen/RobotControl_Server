@@ -64,9 +64,10 @@ namespace Packager
         {
             doNothing,
             newPosition,
-            saveToEeprom,
+            saveRefPosToEeprom,
             disablePidController,
-            enablePidController
+            enablePidController,
+            saveActPosToEeprom
         };
 
         public enum Incoming_Package_Content

@@ -128,7 +128,7 @@ namespace Packager
                     // - Actual action for specific motor is <saveToEeprom>
                     // - Incoming action for specific motor state is <init>
                     //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.saveToEeprom) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveToEeprom) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveRefPosToEeprom) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
                     {
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
@@ -155,6 +155,16 @@ namespace Packager
                     {
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         // Set motor id
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
+                        newData = true;
+                    }
+
+                    // Send request to save act pos when:
+                    // - Actual action for specific motor is <saveActPosToEeprom>
+                    // - Incoming action for specific motor state is <init>
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveRefPosToEeprom) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
+                    {
+                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }

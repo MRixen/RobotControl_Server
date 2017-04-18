@@ -150,14 +150,14 @@ namespace FormRobotControlServer
             if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text)].Id = Int32.Parse(textBox_motorId.Text);
-                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveToEeprom;
+                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveRefPosToEeprom;
             }
             else if (checkBox_all_motors.Checked & (!globalDataSet.AutoModeIsActive))
             {
                 for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
                 {
                     globalDataSet.Motor[i].Id = i + 1;
-                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.saveToEeprom;
+                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.saveRefPosToEeprom;
                 }
             }
         }
@@ -231,6 +231,23 @@ namespace FormRobotControlServer
         private void button_stepForward_Click(object sender, EventArgs e)
         {
             globalDataSet.StepForward = true;
+        }
+
+        private void buttonSaveActPos_Click(object sender, EventArgs e)
+        {
+            if ((textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
+            {
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text)].Id = Int32.Parse(textBox_motorId.Text);
+                globalDataSet.Action[globalDataSet.MotorId] = GlobalDataSet.RobotActions.saveActPosToEeprom;
+            }
+            else if (checkBox_all_motors.Checked & (!globalDataSet.AutoModeIsActive))
+            {
+                for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                {
+                    globalDataSet.Motor[i].Id = i + 1;
+                    globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.saveActPosToEeprom;
+                }
+            }
         }
     }
 }
