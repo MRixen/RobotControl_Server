@@ -75,7 +75,7 @@ namespace FormRobotControlServer
             indicatorLedThread = new Thread(new ThreadStart(indicatorLed));
             indicatorLedThread.Start();
 
-            ActionSelector actionSelector = new ActionSelector(globalDataSet);
+            //ActionSelector actionSelector = new ActionSelector(globalDataSet);
         }
 
         private void FormDatabase_Load(object sender, EventArgs e)

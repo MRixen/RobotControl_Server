@@ -22,7 +22,7 @@ namespace Networking
         private TcpClient clientSocket_send, clientSocket_receive;
         private Thread serverThread_send, serverThread_receive;
         private byte[][] dataPackage;
-        private int DELAY_TIME_THREAD_SENDER = 40;
+        private int DELAY_TIME_THREAD_SENDER = 100;
         private int DELAY_TIME_THREAD_RECEIVER = 10;
         private bool newDataFromPackager = false;
         private int motorCounter = 0;
@@ -191,7 +191,7 @@ namespace Networking
                 networkStream_server_send.Flush();
                 //for (int i = 0; i < message.Length; i++) Debug.WriteLine("send message[" + i + "]: " + message[i]);
 
-                //Debug.WriteLine("send message[" + 3 + "]: " + message[3]);
+                //Debug.WriteLine("send message[" + 1 + "]: " + message[1]);
                 //Debug.WriteLine("send message[" + 4 + "]: " + message[4]);
             }
             catch (Exception e)
