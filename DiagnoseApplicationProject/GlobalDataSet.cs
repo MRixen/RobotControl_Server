@@ -21,7 +21,7 @@ namespace Packager
         private bool showProgramDuration;
         private bool abortServerOperation = false;
         private bool abortActionSelector = false;
-        private const int MAX_MOTORS = 2;
+        private const int MAX_MOTORS = 4;
         private const int MAX_DATAPACKAGE_ELEMENT = 8;
         private const int MAX_TABLE_ENTRY = 5;
 
@@ -67,7 +67,8 @@ namespace Packager
             saveRefPosToEeprom,
             disablePidController,
             enablePidController,
-            saveActPosToEeprom
+            saveActPosToEeprom,
+            actionIsSet
         };
 
         public enum Incoming_Package_Content

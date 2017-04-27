@@ -66,14 +66,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RobotControlServer.exe" size="4322816">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RobotControlServer.exe" size="4323328">
       <assemblyIdentity name="RobotControlServer" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>aQNvKv0OmBPvCVh+VT7GLfvw4sG3piZ2CD6+myLwbA0=</dsig:DigestValue>
+        <dsig:DigestValue>HF61iPj7twZZPG83ZrSTOsHQw0qm4sxlqQ5i2Vl+S90=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

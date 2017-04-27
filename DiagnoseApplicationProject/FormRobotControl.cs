@@ -169,6 +169,7 @@ namespace FormRobotControlServer
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Id = Int32.Parse(textBox_motorId.Text);
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Angle = Int32.Parse(textBox_soll_angle.Text);
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Action = GlobalDataSet.RobotActions.newPosition;
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].ActionIsSet = false;
                 //Debug.WriteLine("globalDataSet.Motor[0].Id: " + globalDataSet.Motor[0].Id);
                 //Debug.WriteLine("globalDataSet.Motor[0].Angle: " + globalDataSet.Motor[0].Angle);
                 //Debug.WriteLine("globalDataSet.Motor[0].Action: " + globalDataSet.Motor[0].Action);
@@ -177,6 +178,7 @@ namespace FormRobotControlServer
             {
                 for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
                 {
+                    globalDataSet.Motor[i].ActionIsSet = false;
                     globalDataSet.Motor[i].Id = i + 1;
                     globalDataSet.Motor[i].Angle = Int32.Parse(textBox_soll_angle.Text);
                     globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.newPosition;

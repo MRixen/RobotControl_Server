@@ -17,6 +17,7 @@ namespace RobotControlServer
         private int duration = 0;
         private int rowCounter = 0;
         private int maxRows = 0;
+        private bool actionIsSet = false;
 
         public int Id
         {
@@ -119,6 +120,19 @@ namespace RobotControlServer
             set
             {
                 maxRows = value;
+            }
+        }
+
+        public bool ActionIsSet
+        {
+            get
+            {
+                return actionIsSet;
+            }
+
+            set
+            {
+                actionIsSet = value;
             }
         }
     }

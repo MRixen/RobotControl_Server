@@ -167,7 +167,7 @@ namespace Networking
 
                     // Decrement motor id to prevent exception (index start at 1 but with no motor selected the index is 0)
                     // Get action state for current motor 
-                    if ((globalDataSet.DataPackage_In_Test[1] == 1) | (globalDataSet.DataPackage_In_Test[1] == 2))
+                    if (globalDataSet.DataPackage_In_Test[1] > 0)
                     {
                         globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State = (GlobalDataSet.ActionStates)globalDataSet.DataPackage_In_Test[2];
                         //Debug.WriteLine("globalDataSet.Motor["+(globalDataSet.DataPackage_In_Test[1] - 1)+"].State: " + globalDataSet.Motor[globalDataSet.DataPackage_In_Test[1] - 1].State);
