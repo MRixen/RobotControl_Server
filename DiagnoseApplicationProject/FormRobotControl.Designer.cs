@@ -32,9 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRobotControl));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupBox_robotControl = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.label_stepForward = new System.Windows.Forms.Label();
             this.checkBox_all_motors = new System.Windows.Forms.CheckBox();
-            this.button2 = new System.Windows.Forms.Button();
             this.label_motorId = new System.Windows.Forms.Label();
             this.checkBox_disablePidController = new System.Windows.Forms.CheckBox();
             this.textBox_motorId = new System.Windows.Forms.TextBox();
@@ -51,7 +52,6 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
             this.groupBox_robotControl.SuspendLayout();
             this.groupBox_tasks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -86,6 +86,26 @@
             this.groupBox_robotControl.TabStop = false;
             this.groupBox_robotControl.Text = "Actions / Modes";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(155, 22);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(118, 34);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Step forward";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button_stepForward_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(7, 309);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(49, 79);
+            this.button4.TabIndex = 47;
+            this.button4.Text = "Save act pos";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.buttonSaveActPos_Click);
+            // 
             // label_stepForward
             // 
             this.label_stepForward.AutoSize = true;
@@ -105,16 +125,6 @@
             this.checkBox_all_motors.TabIndex = 9;
             this.checkBox_all_motors.Text = "All";
             this.checkBox_all_motors.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(155, 22);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(118, 34);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Step forward";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button_stepForward_Click);
             // 
             // label_motorId
             // 
@@ -264,16 +274,6 @@
             this.label1.Size = new System.Drawing.Size(56, 17);
             this.label1.TabIndex = 44;
             this.label1.Text = "Motor 1";
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(7, 309);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(49, 79);
-            this.button4.TabIndex = 47;
-            this.button4.Text = "Save act pos";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.buttonSaveActPos_Click);
             // 
             // FormRobotControl
             // 

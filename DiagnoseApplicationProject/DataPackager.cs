@@ -99,82 +99,60 @@ namespace Packager
 
             while (!globalDataSet.AbortServerOperation)
             {
-                // Iterate through the motor array
+                // Iterate through motor array
                 for (int motorCounter = 0; motorCounter < globalDataSet.MAX_MOTOR_AMOUNT; motorCounter++)
                 {
-                    //Debug.WriteLine(globalDataSet.Motor[motorCounter].Id + ";" + globalDataSet.Motor[motorCounter].Angle + ";" + globalDataSet.Motor[motorCounter].Velocity + ";" + globalDataSet.Motor[motorCounter].Action + ";" + globalDataSet.ControlDataRowCounter[motorCounter]);
+                    //Debug.WriteLine("Motor " + motorCounter + ": " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action]);
 
-                    // Send nothing when:
-                    // - Actual action for specific motor is <doNothing>
-                    // - Incoming action state is <init>
-                    //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing) & !(globalDataSet.Motor[motorCounter].ActionIsSet) & (globalDataSet.Motor[motorCounter].Id != 0))
+                    // Send nothing
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing))
                     {
                         // Set indicator led to green
-                        //globalDataSet.IndicatorLed[motorCounter] = true;
-                        //dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
-                        //for (int i = 1; i < globalDataSet.MAX_DATAPACKAGE_ELEMENTS; i++) dataPackage_out[motorCounter][i] = 0;
-                        //dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
-                        //newData = true;
+                        globalDataSet.IndicatorLed[motorCounter] = true;
+                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
+                        newData = true;
                     }
 
-                    //if (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] != (int)GlobalDataSet.ActionStates.init)
-                    if (globalDataSet.Motor[motorCounter].State != (int)GlobalDataSet.ActionStates.init)
+                    if (globalDataSet.Motor[motorCounter].Action != (int)GlobalDataSet.RobotActions.doNothing)
                     {
                         globalDataSet.IndicatorLed[motorCounter] = false;
                     }
 
-                    // Send request to save ref pos when:
-                    // - Actual action for specific motor is <saveToEeprom>
-                    // - Incoming action for specific motor state is <init>
-                    //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.saveToEeprom) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveRefPosToEeprom) & !(globalDataSet.Motor[motorCounter].ActionIsSet))
+                    // Send request to disable pid controller
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.disablePidController))
                     {
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
 
-                    // Send request to disable pid controller when:
-                    // - Actual action is <disablePidController>
-                    // - Incoming action state is <init>
-                    //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.disablePidController) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.disablePidController) & !(globalDataSet.Motor[motorCounter].ActionIsSet))
-                    {
-                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
-                        // Set motor id
-                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
-                        newData = true;
-                    }
-
-                    // Send request to enable pid controller when:
-                    // - Actual action is <enablePidController>
-                    // - Incoming action state is <init>
-                    //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.enablePidController) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.enablePidController) & !(globalDataSet.Motor[motorCounter].ActionIsSet))
-                    {
-                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
-                        // Set motor id
-                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
-                        newData = true;
-                    }
-
-                    // Send request to save act pos when:
-                    // - Actual action for specific motor is <saveActPosToEeprom>
-                    // - Incoming action for specific motor state is <init>
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveActPosToEeprom) & !(globalDataSet.Motor[motorCounter].ActionIsSet))
+                    // Send request to enable pid controller
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.enablePidController))
                     {
                         dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
 
-                    // Send control data when:
-                    // - Actual action is <newPosition>
-                    // - Incoming action state is <init>
-                    //if (((int)globalDataSet.Action[globalDataSet.MotorId] == (int)GlobalDataSet.RobotActions.newPosition) & (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                    //if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.newPosition) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
-                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.newPosition) & !(globalDataSet.Motor[motorCounter].ActionIsSet))
+                    // Send request to save ref pos
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveRefPosToEeprom))
+                    {
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
+                        newData = true;
+                    }
+
+                    // Send request to save act pos
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.saveActPosToEeprom))
+                    {
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
+                        newData = true;
+                    }
+
+                    // Send control data
+                    if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.newPosition))
                     {
                         globalDataSet.Motor[motorCounter].ActionIsSet = true;
 
@@ -203,60 +181,15 @@ namespace Packager
                         // Set velocity
                         velocityValueTemp = BitConverter.GetBytes(globalDataSet.Motor[motorCounter].Velocity);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity] = velocityValueTemp[0];
-                        //Debug.WriteLine("globalDataSet.Motor["+motorCounter+"].ActionIsSet) 1:" + globalDataSet.Motor[motorCounter].ActionIsSet);
-
-                        //Debug.WriteLine("action: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action]);
-                        //Debug.WriteLine("id: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
-                        //Debug.WriteLine("angle1: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1]);
-                        //Debug.WriteLine("angle2: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2]);
-                        //Debug.WriteLine("vel: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity]);
 
                         newData = true;
                     }
 
-                    // Reset action to zero (for specific motor) when task is completed (state is complete, e.g. position is reached)
-                    //if (globalDataSet.DataPackage_In[globalDataSet.MotorId][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.complete)
-                    if ((int)globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.complete)
-                    {
-                        //if (motorCounter == 1) Debug.WriteLine("(int)globalDataSet.Motor["+motorCounter+"].State: " + (int)globalDataSet.Motor[motorCounter].State);
-
-
-                        //globalDataSet.Motor[motorCounter].Action = (int)GlobalDataSet.RobotActions.doNothing;
-                        //dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
-                        //dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)(globalDataSet.Motor[motorCounter].Id);
-
-
-                        //Debug.WriteLine("---------------o-------------");
-                        //Debug.WriteLine("action: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.action]);
-                        //Debug.WriteLine("id: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
-                        //Debug.WriteLine("----------------------------");
-
-                        //newData = true;
-                    }
-
-                    // TODO: motor id zählt hoch (1, 2) aber gesendet wird nur 1 oder 2
-                    //Debug.WriteLine(dataPackage_out[motorCounter][1]);
-                    //Debug.WriteLine("motorCounter " + motorCounter);
-
-                    // Fire event that server can handle new data
-                    // Only at the end when the hole datapackage with all motor ids is packed
                     if (newData & (motorCounter == globalDataSet.Motor.Length-1))
                     {
-                        //Debug.WriteLine("motorCounter: " + motorCounter);
                         newData = false;
-                        //byte[] tempByte = (byte[])dataPackage_out.GetValue(motorCounter);
-                        //for (int i = 0; i < tempByte.Length; i++) Debug.WriteLine("tempByte: " + tempByte[i]);
-                        //Debug.WriteLine("---------------u-------------");
-                        //Debug.WriteLine("action: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.action]);
-                        //Debug.WriteLine("id: " + dataPackage_out[1][(int)GlobalDataSet.Outgoing_Package_Content.motorId]);
-                        //Debug.WriteLine("angle1: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1]);
-                        //Debug.WriteLine("angle2: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2]);
-                        //Debug.WriteLine("vel: " + dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.velocity]);
-                        //Debug.WriteLine("----------------------------");
-
                         this.newPackageEvent(dataPackage_out);
                     }
-                    //Thread.Sleep(500);
                 }
             }
         }

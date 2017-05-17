@@ -55,7 +55,7 @@ namespace RobotControlServer
             // Start robot control as a timer
             controlTimer = new Timer(this.controlRobot, null, 0, SAMPLE_TIME);
 
-            loadDatabaseThread = new Thread(controlRobot);
+            //loadDatabaseThread = new Thread(controlRobot);
         }
 
 
@@ -90,50 +90,37 @@ namespace RobotControlServer
                         // Get control data for specific motor (angle, velocity, time)
                         controlData = getControlData(motorCounter, globalDataSet.Motor[motorCounter].RowCounter);
 
-                        //Debug.WriteLine("action " + motorCounter + ": " + globalDataSet.Motor[motorCounter].Action);
-                        //Debug.WriteLine("state " + motorCounter + ": " + globalDataSet.Motor[motorCounter].State);
-                        //Debug.WriteLine("rowCounter " + motorCounter + ":" + globalDataSet.Motor[motorCounter].RowCounter);
-                        //Debug.WriteLine("duration " + motorCounter + ":" + duration[motorCounter]);
-                        //Debug.WriteLine("-------------------------------------");
-
                         // Check if actual sampletime equal to time value in actual row of specific motor table
                         // We need to multiplicate the time value because the smallest value inside database is 1
                         // For example: 1 (value in database table) * 10 = 10ms (smallest time value)
                         if (duration[motorCounter] == (controlData[2]) * 10)
                         {
-                            // Set control data for specific motor when:
-                            //  - Current action for specific motor is <doNothing>
-                            //  - Incoming action state for specific motor is <init>
-                            // NOTE: This will control the motor when the state is as init only!
-                            //if (((int)globalDataSet.Action[motorCounter] == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.DataPackage_In[motorCounter][(int)GlobalDataSet.Incoming_Package_Content.actionState] == (int)GlobalDataSet.ActionStates.init))
-                            if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.doNothing) & (globalDataSet.Motor[motorCounter].State == (int)GlobalDataSet.ActionStates.init))
-                            {
-                                // Set motor id
-                                //globalDataSet.MotorId = motorCounter;
-                                globalDataSet.Motor[motorCounter].Id = motorCounter + 1;
+                            // Set motor id
+                            //globalDataSet.MotorId = motorCounter;
+                            globalDataSet.Motor[motorCounter].Id = motorCounter + 1;
 
-                                // Get endposition from local db and set it to global data
-                                //globalDataSet.MotorSollAngle = controlData[0];
-                                globalDataSet.Motor[motorCounter].Angle = controlData[0];
+                            // Get endposition from local db and set it to global data
+                            //globalDataSet.MotorSollAngle = controlData[0];
+                            globalDataSet.Motor[motorCounter].Angle = controlData[0];
 
-                                // Set velocity
-                                //globalDataSet.MotorSollVelocity = controlData[1];
-                                globalDataSet.Motor[motorCounter].Velocity = controlData[1];
+                            // Set velocity
+                            //globalDataSet.MotorSollVelocity = controlData[1];
+                            globalDataSet.Motor[motorCounter].Velocity = controlData[1];
 
-                                // Set task number for new position
-                                //globalDataSet.Action[motorCounter] = GlobalDataSet.RobotActions.newPosition;
-                                globalDataSet.Motor[motorCounter].Action = GlobalDataSet.RobotActions.newPosition;
+                            // Set task number for new position
+                            //globalDataSet.Action[motorCounter] = GlobalDataSet.RobotActions.newPosition;
+                            globalDataSet.Motor[motorCounter].Action = GlobalDataSet.RobotActions.newPosition;
 
-                                // Increment the counter for row in a motor table to get the next control value (angle, velocity)
-                                if (globalDataSet.Motor[motorCounter].RowCounter < globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
-                            }
+                            // Increment the counter for row in a motor table to get the next control value (angle, velocity)
+                            if (globalDataSet.Motor[motorCounter].RowCounter < globalDataSet.Motor[motorCounter].MaxRows) globalDataSet.Motor[motorCounter].RowCounter++;
+
                         }
                         // If last row is reached this action is finished (reset counter, duration and stepForward flag)
                         if (globalDataSet.Motor[motorCounter].RowCounter == globalDataSet.Motor[motorCounter].MaxRows)
                         {
                             globalDataSet.Motor[motorCounter].RowCounter = 0;
                             duration[motorCounter] = 0;
-                            globalDataSet.StepForward = false;
+                            //globalDataSet.StepForward = false;
                         }
                         // Increase duration value to get next inflection point
                         else duration[motorCounter] = duration[motorCounter] + SAMPLE_TIME;
