@@ -40,7 +40,7 @@ namespace RobotControlServer
 
             try
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     dataAdapter = new SqlDataAdapter("SELECT * FROM m" + i, dataBase_connection);
                     dataAdapter.Fill(dataSetTemp, "m" + i);
@@ -84,7 +84,7 @@ namespace RobotControlServer
             dataBase_connection.Open();
 
             // Copy content of database to dataset and close connection
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
             {
                 dataAdapter = new SqlDataAdapter("SELECT * FROM m"+i, dataBase_connection);
                 dataAdapter.Fill(dataSet, "m"+i);

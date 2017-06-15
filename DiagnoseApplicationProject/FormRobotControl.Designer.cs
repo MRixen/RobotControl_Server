@@ -52,6 +52,8 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox_soll_speed = new System.Windows.Forms.TextBox();
             this.groupBox_robotControl.SuspendLayout();
             this.groupBox_tasks.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -65,6 +67,8 @@
             // 
             // groupBox_robotControl
             // 
+            this.groupBox_robotControl.Controls.Add(this.label3);
+            this.groupBox_robotControl.Controls.Add(this.textBox_soll_speed);
             this.groupBox_robotControl.Controls.Add(this.button2);
             this.groupBox_robotControl.Controls.Add(this.button4);
             this.groupBox_robotControl.Controls.Add(this.label_stepForward);
@@ -129,9 +133,10 @@
             // label_motorId
             // 
             this.label_motorId.AutoSize = true;
-            this.label_motorId.Location = new System.Drawing.Point(6, 69);
+            this.label_motorId.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_motorId.Location = new System.Drawing.Point(6, 22);
             this.label_motorId.Name = "label_motorId";
-            this.label_motorId.Size = new System.Drawing.Size(59, 17);
+            this.label_motorId.Size = new System.Drawing.Size(67, 17);
             this.label_motorId.TabIndex = 7;
             this.label_motorId.Text = "Motor id";
             // 
@@ -148,7 +153,7 @@
             // 
             // textBox_motorId
             // 
-            this.textBox_motorId.Location = new System.Drawing.Point(7, 89);
+            this.textBox_motorId.Location = new System.Drawing.Point(7, 42);
             this.textBox_motorId.Name = "textBox_motorId";
             this.textBox_motorId.Size = new System.Drawing.Size(100, 22);
             this.textBox_motorId.TabIndex = 6;
@@ -156,9 +161,10 @@
             // label_soll_angle
             // 
             this.label_soll_angle.AutoSize = true;
-            this.label_soll_angle.Location = new System.Drawing.Point(6, 24);
+            this.label_soll_angle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_soll_angle.Location = new System.Drawing.Point(6, 69);
             this.label_soll_angle.Name = "label_soll_angle";
-            this.label_soll_angle.Size = new System.Drawing.Size(70, 17);
+            this.label_soll_angle.Size = new System.Drawing.Size(80, 17);
             this.label_soll_angle.TabIndex = 5;
             this.label_soll_angle.Text = "Soll angle";
             // 
@@ -174,7 +180,7 @@
             // 
             // textBox_soll_angle
             // 
-            this.textBox_soll_angle.Location = new System.Drawing.Point(7, 44);
+            this.textBox_soll_angle.Location = new System.Drawing.Point(7, 89);
             this.textBox_soll_angle.Name = "textBox_soll_angle";
             this.textBox_soll_angle.Size = new System.Drawing.Size(100, 22);
             this.textBox_soll_angle.TabIndex = 4;
@@ -275,6 +281,23 @@
             this.label1.TabIndex = 44;
             this.label1.Text = "Motor 1";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(7, 117);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(84, 17);
+            this.label3.TabIndex = 49;
+            this.label3.Text = "Soll speed";
+            // 
+            // textBox_soll_speed
+            // 
+            this.textBox_soll_speed.Location = new System.Drawing.Point(8, 137);
+            this.textBox_soll_speed.Name = "textBox_soll_speed";
+            this.textBox_soll_speed.Size = new System.Drawing.Size(100, 22);
+            this.textBox_soll_speed.TabIndex = 48;
+            // 
             // FormRobotControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -326,5 +349,7 @@
         private System.Windows.Forms.CheckBox checkBox_all_motors;
         private System.Windows.Forms.Label label_stepForward;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox_soll_speed;
     }
 }

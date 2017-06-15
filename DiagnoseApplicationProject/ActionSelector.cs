@@ -214,12 +214,12 @@ namespace RobotControlServer
                             // Save amount of rows for each table
                             //globalDataSet.ControlDataMaxRows[motorId - 1] = maxTableRow;
                             globalDataSet.Motor[motorId - 1].MaxRows = maxTableRow;
-                        }
-                        catch (Exception err)
-                        {
-                            MessageBox.Show(err.Message);
-                        }
                     }
+                        catch (Exception err)
+                {
+                    MessageBox.Show(err.Message);
+                }
+            }
                 }
                 catch (Exception)
                 {

@@ -183,14 +183,15 @@ namespace FormRobotControlServer
 
         private void button_MoveTo_Clicked(object sender, EventArgs e)
         {
-            if ((textBox_soll_angle.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive) & !checkBox_all_motors.Checked)
+            if ((textBox_soll_angle.Text.Length != 0) & (textBox_soll_speed.Text.Length != 0) & (textBox_motorId.Text.Length != 0) & (!globalDataSet.AutoModeIsActive) & !checkBox_all_motors.Checked)
             {
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Id = Int32.Parse(textBox_motorId.Text);
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Angle = Int32.Parse(textBox_soll_angle.Text);
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Action = GlobalDataSet.RobotActions.newPosition;
                 globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].ActionIsSet = false;
+                globalDataSet.Motor[Int32.Parse(textBox_motorId.Text) - 1].Velocity = Int32.Parse(textBox_soll_speed.Text);
             }
-            else if (checkBox_all_motors.Checked & (textBox_motorId.Text.Length != 0) & (textBox_soll_angle.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
+            else if (checkBox_all_motors.Checked & (textBox_motorId.Text.Length != 0) & (textBox_soll_angle.Text.Length != 0) & (textBox_soll_speed.Text.Length != 0) & (!globalDataSet.AutoModeIsActive))
             {
                 for (int i = 0; i < globalDataSet.MAX_MOTOR_AMOUNT; i++)
                 {
@@ -198,9 +199,10 @@ namespace FormRobotControlServer
                     globalDataSet.Motor[i].Id = i + 1;
                     globalDataSet.Motor[i].Angle = Int32.Parse(textBox_soll_angle.Text);
                     globalDataSet.Motor[i].Action = GlobalDataSet.RobotActions.newPosition;
+                    globalDataSet.Motor[i].Velocity = Int32.Parse(textBox_soll_speed.Text);
                 }
             }
-            else MessageBox.Show("Invalid motor id or angle");
+            else MessageBox.Show("Invalid motor id, angle or speed");
         }
 
         private void checkChanged_disablePidController(object sender, EventArgs e)
