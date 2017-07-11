@@ -12,7 +12,7 @@ namespace FormRobotControlServer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -70,7 +70,7 @@ namespace FormRobotControlServer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\Users\\\\Manuel.Rixen\\\\Desktop\\\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\Users\\\\M.Rixen\\\\Desktop\\\\")]
         public string FILE_SAVE_PATH {
             get {
                 return ((string)(this["FILE_SAVE_PATH"]));
@@ -80,9 +80,9 @@ namespace FormRobotControlServer.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Manuel.Rixen\\Documen" +
-            "ts\\GitHub\\DataBase_RobotControl\\DataBase\\DB_RobotControl.mdf;Initial Catalog=Dat" +
-            "abase1;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\M.Rixen\\Documents\\Gi" +
+            "tHub\\DataBase_RobotControl\\DataBase\\DB_RobotControl.mdf;Initial Catalog=Database" +
+            "1;Integrated Security=True")]
         public string ConnectionString_DataBase {
             get {
                 return ((string)(this["ConnectionString_DataBase"]));

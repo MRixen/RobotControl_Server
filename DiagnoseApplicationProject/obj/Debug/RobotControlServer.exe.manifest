@@ -73,7 +73,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>wjV06Jh4sQ14WmTycMSHnyqn3sPThZgaL185CsdRXTw=</dsig:DigestValue>
+        <dsig:DigestValue>CwhUgw4/oWOZM05ncSvX3NI728eKvAURnVZBMXTuJb0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -86,13 +86,13 @@
       <dsig:DigestValue>TJFQctpOuKFZ2/KowEoQlsQQu7eUIIh1Y7NBgpCsyXk=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="RobotControlServer.exe.config" size="4162">
+  <file name="RobotControlServer.exe.config" size="4152">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>Lc7h8CU+BYIKfHVIMZpL2m4K2H1wRWdSZi0tbbvcdjo=</dsig:DigestValue>
+      <dsig:DigestValue>2fqZaVhlD2GG5RHSCJmQXLdmJMuGgxbaZjLnsC1Zcm4=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

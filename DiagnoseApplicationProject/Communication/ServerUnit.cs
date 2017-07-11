@@ -22,7 +22,7 @@ namespace Networking
         private TcpClient clientSocket_send, clientSocket_receive;
         private Thread serverThread_send, serverThread_receive;
         private byte[][] dataPackage;
-        private int DELAY_TIME_THREAD_SENDER = 100;
+        private int DELAY_TIME_THREAD_SENDER = 125;
         private int DELAY_TIME_THREAD_RECEIVER = 10;
         private bool newDataFromPackager = false;
         private int motorCounter = 0;
