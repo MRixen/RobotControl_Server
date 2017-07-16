@@ -38,6 +38,12 @@ namespace Packager
     /// 5. byte: Direction of the motor 
     /// 6. byte: 
     /// 7. byte: 
+    /// 
+    /// UPDATE:
+    /// 0. byte: action
+    /// 1. byte: motor id
+    /// 2. byte: angle
+    /// 3. byte: Direction of the motor 
     ///
     /// <B>PACKAGE CONSTRUCT INCOMING</B>
     /// 
@@ -52,11 +58,17 @@ namespace Packager
 
     class DataPackager
     {
-        public delegate void DataPackagedEventHandler(byte[][] dataPackage);
+        // RASPBERRY PI
+        //public delegate void DataPackagedEventHandler(byte[][] dataPackage);
+
+        // ENC28J60
+        public delegate void DataPackagedEventHandler(byte[] dataPackage);
+
         public event DataPackagedEventHandler newPackageEvent; //!< This event is fired after new data is packaged
 
         private Thread serverThread_packaging; //!< This thread is necessary to run the packaging loop
         private byte[][] dataPackage_out; //!< Package that contains the packaged control data
+        private byte[] dataPackage_conc_out; //!< Package that contains the packaged control data as normal byte array
         private GlobalDataSet globalDataSet; //!< Contains global data (different classes use the same object to share data)
         private short angleValueTemp = 0; //!< Temporary angle that is set to the package
 
@@ -65,13 +77,17 @@ namespace Packager
         {
             this.globalDataSet = globalDataSet;
             dataPackage_out = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT][];
+            dataPackage_conc_out = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT * 5];
 
             // Initialize the packaged data array with default values
             for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
             {
-                dataPackage_out[i] = new byte[8];
+                dataPackage_out[i] = new byte[5];
                 for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++) dataPackage_out[i][j] = 0;
             }
+
+            for (int j = 0; j < (this.globalDataSet.MAX_MOTOR_AMOUNT * 5); j++) dataPackage_conc_out[j] = 0;
+
         }
 
         ///\brief Start thread to handle the packaging of new data.
@@ -122,7 +138,7 @@ namespace Packager
                     // Send request to disable pid controller
                     if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.disablePidController))
                     {
-                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
@@ -130,7 +146,7 @@ namespace Packager
                     // Send request to enable pid controller
                     if (((int)globalDataSet.Motor[motorCounter].Action == (int)GlobalDataSet.RobotActions.enablePidController))
                     {
-                        dataPackage_out[motorCounter][0] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.action] = Convert.ToByte(globalDataSet.Motor[motorCounter].Action);
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)globalDataSet.Motor[motorCounter].Id;
                         newData = true;
                     }
@@ -163,6 +179,7 @@ namespace Packager
                         dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorId] = (byte)(globalDataSet.Motor[motorCounter].Id);
 
                         // Set direction and angle
+                        // UPDATE
                         if (globalDataSet.Motor[motorCounter].Angle < 0)
                         {
                             angleValueTemp = (short)(globalDataSet.Motor[motorCounter].Angle * (-1));
@@ -173,10 +190,12 @@ namespace Packager
                             angleValueTemp = (short)(globalDataSet.Motor[motorCounter].Angle);
                             dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.motorDir] = (byte)1;
                         }
-                        byte[] angleValue_converted = BitConverter.GetBytes(angleValueTemp);
-                        if (BitConverter.IsLittleEndian) Array.Reverse(angleValue_converted);
-                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1] = angleValue_converted[0];
-                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2] = angleValue_converted[1];
+
+                        //byte[] angleValue_converted = BitConverter.GetBytes(angleValueTemp);
+                        //if (BitConverter.IsLittleEndian) Array.Reverse(angleValue_converted);
+                        //dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_1] = angleValue_converted[0];
+                        //dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle_2] = angleValue_converted[1];
+                        dataPackage_out[motorCounter][(int)GlobalDataSet.Outgoing_Package_Content.angle] = (byte)angleValueTemp;
 
                         // Set velocity
                         velocityValueTemp = BitConverter.GetBytes(globalDataSet.Motor[motorCounter].Velocity);
@@ -185,10 +204,23 @@ namespace Packager
                         newData = true;
                     }
 
-                    if (newData & (motorCounter == globalDataSet.Motor.Length-1))
+                    if (newData & (motorCounter == globalDataSet.Motor.Length - 1))
                     {
                         newData = false;
-                        this.newPackageEvent(dataPackage_out);
+
+                        // ENC28J60
+                        // Copy 2D array to 1D array with 6*5 bytes
+                        for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
+                        {
+                            for (int j = 0; j < 5; j++) dataPackage_conc_out[j + (i * 5)] = dataPackage_out[i][j];
+                        }
+
+                        this.newPackageEvent(dataPackage_conc_out);
+
+
+                        // RASPBERRY PI
+                        //this.newPackageEvent(dataPackage_out);
+
                     }
                 }
             }

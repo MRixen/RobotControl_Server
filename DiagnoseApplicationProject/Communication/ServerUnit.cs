@@ -14,15 +14,21 @@ namespace Networking
 
     class ServerUnit
     {
-        public delegate void ServerEventHandler(byte[][] dataPackageServer);
+        public delegate void ServerEventHandler(byte[] dataPackageServer);
         public event ServerEventHandler newServerEvent;
 
         private TcpListener serverSocket_send = new TcpListener(4001);
         private TcpListener serverSocket_receive = new TcpListener(4002);
         private TcpClient clientSocket_send, clientSocket_receive;
         private Thread serverThread_send, serverThread_receive;
-        private byte[][] dataPackage;
-        private int DELAY_TIME_THREAD_SENDER = 125;
+
+        // ENC28J60
+        private byte[] dataPackage;
+
+        // RASPBERRY PI
+        //private byte[][] dataPackage;
+
+        private int DELAY_TIME_THREAD_SENDER = 500;
         private int DELAY_TIME_THREAD_RECEIVER = 10;
         private bool newDataFromPackager = false;
         private int motorCounter = 0;
@@ -35,19 +41,31 @@ namespace Networking
         public ServerUnit(GlobalDataSet globalDataSet)
         {
             this.globalDataSet = globalDataSet;
-            dataPackage = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT][];
+
+            // ENC28J60
+            dataPackage = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT * 5];
+
+            // RASPBERRY PI
+            //dataPackage = new byte[this.globalDataSet.MAX_MOTOR_AMOUNT][];
+
             //// Set event for new available packaged data
             //dataPackager.newPackageEvent += new DataPackager.DataPackagedEventHandler(dataPackageReceived);
 
             // Initialize data array with default values
-            for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
-            {
-                dataPackage[i] = new byte[8];
-                for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++) dataPackage[i][j] = 0;
-            }
+            // ENC28J60
+            for (int j = 0; j < (this.globalDataSet.MAX_MOTOR_AMOUNT * 5); j++) dataPackage[j] = 0;
+
+
+            // RASPERRY PI
+            //for (int i = 0; i < this.globalDataSet.MAX_MOTOR_AMOUNT; i++)
+            //{
+            //    dataPackage[i] = new byte[8];
+            //    for (int j = 0; j < this.globalDataSet.MAX_DATAPACKAGE_ELEMENTS; j++) dataPackage[i][j] = 0;
+            //}
         }
 
-        public void dataPackageReceived(byte[][] dataPackage)
+        //public void dataPackageReceived(byte[][] dataPackage)
+        public void dataPackageReceived(byte[] dataPackage)
         {
             // Write new data to current context and change the flag to show the sending thread that new data is available
             this.dataPackage = dataPackage;
@@ -124,16 +142,15 @@ namespace Networking
                         Thread.Sleep(2000);
                     }
 
-                    //if (newDataFromPackager)
-                    //{
-                        // Copy the new data to local variable and reset the flag
-                        //localDataPackage = dataPackage;
-                        //newDataFromPackager = false;
-                    //}
                     // Send dataPackage to client
-                    sender(dataPackage[motorCounter]);
-                    if (motorCounter < globalDataSet.Motor.Length-1) motorCounter++;
-                    else motorCounter = 0;
+
+                    // ENC28J60
+                    sender(dataPackage);
+
+                    // RASPBERRY PI
+                    //sender(dataPackage[motorCounter]);
+                    //if (motorCounter < globalDataSet.Motor.Length - 1) motorCounter++;
+                    //else motorCounter = 0;
 
                     // Wait some time that the client can handle the new data
                     Thread.Sleep(DELAY_TIME_THREAD_SENDER);
@@ -160,7 +177,7 @@ namespace Networking
                         Debug.WriteLine("Client is connected to receive socket");
                         showMsg = false;
                     }
-           
+
                     // Set received data to global data array
                     //globalDataSet.DataPackage_In[globalDataSet.MotorId] = receiver();
                     globalDataSet.DataPackage_In_Test = receiver();

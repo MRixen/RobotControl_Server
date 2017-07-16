@@ -22,7 +22,7 @@ namespace Packager
         private bool abortServerOperation = false;
         private bool abortActionSelector = false;
         private const int MAX_MOTORS = 6;
-        private const int MAX_DATAPACKAGE_ELEMENT = 8;
+        private const int MAX_DATAPACKAGE_ELEMENT = 4;
         private const int MAX_TABLE_ENTRY = 5;
 
         private byte[][] currentRecValues = new byte[MAX_MOTORS][];
@@ -78,14 +78,24 @@ namespace Packager
             actionState
         };
 
+        //public enum Outgoing_Package_Content
+        //{
+        //    action,
+        //    motorId,
+        //    velocity,
+        //    angle_1,
+        //    angle_2,
+        //    motorDir
+        //};
+
+            // UPDATE
         public enum Outgoing_Package_Content
         {
             action,
-            motorId,
+            angle,
             velocity,
-            angle_1,
-            angle_2,
-            motorDir
+            motorDir,
+            motorId
         };
 
         public enum RobotOptions

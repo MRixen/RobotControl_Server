@@ -102,6 +102,12 @@
              5. byte: Direction of the motor 
              6. byte: 
              7. byte: 
+             
+             UPDATE:
+             0. byte: action
+             1. byte: motor id
+             2. byte: angle
+             3. byte: Direction of the motor 
             
              <B>PACKAGE CONSTRUCT INCOMING</B>
              
